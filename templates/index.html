@@ -1,0 +1,1492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kinetix Exchange</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    *{
+      margin:0;padding:0;box-sizing:border-box;
+      font-family:'Poppins', sans-serif;
+      transition: all 0.2s ease;
+    }
+
+    html, body{
+      width:100%;
+      height:100%;
+      margin:0;
+      padding:0;
+      background:#0B0E11;
+      color:#EAECEF;
+      overflow-x:hidden;
+    }
+
+    /* ✅ fixes thin dark/black top line / gap in some browsers */
+    body{
+      background:#0B0E11;
+      color:#EAECEF;
+      overflow-x:hidden;
+      overflow-y:auto;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+
+    /* HEADER */
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:10px 60px;
+      background:rgba(18,24,38,0.9);
+      /* ✅ ensure header paints cleanly to the very top */
+      top:0;
+      left:0;
+      right:0;
+      position:sticky;
+      z-index:100;
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transform: translateZ(0);
+      will-change: transform;
+    }
+
+    /* Brand */
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-left:-28px;
+      user-select:none;
+    }
+    .brand-mark{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(255,213,79,.22);
+      box-shadow:0 10px 25px rgba(247,166,0,.18);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,213,79,.95), rgba(247,166,0,.9) 50%, rgba(247,166,0,.35) 100%),
+        linear-gradient(135deg, rgba(247,166,0,.9), rgba(255,213,79,.8));
+    }
+    .brand-mark::before{
+      content:"";
+      position:absolute;
+      inset:9px;
+      border-radius:8px;
+      background:
+        linear-gradient(135deg,
+          transparent 0%,
+          transparent 42%,
+          rgba(255,255,255,.85) 42%,
+          rgba(255,255,255,.85) 48%,
+          transparent 48%,
+          transparent 100%);
+      opacity:.32;
+      transform:skewX(-12deg);
+    }
+    .brand-mark::after{
+      content:"";
+      position:absolute;
+      inset:-20%;
+      background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,.35) 45%, transparent 60%);
+      transform:rotate(18deg);
+    }
+
+    .brand-text{
+      font-weight:800;
+      letter-spacing:.6px;
+      font-size:18px;
+      line-height:1.05;
+      color:#F7A600;
+      text-transform:uppercase;
+    }
+    .brand-sub{
+      display:block;
+      font-size:10px;
+      letter-spacing:1.6px;
+      color:#9CA3AF;
+      margin-top:2px;
+    }
+
+    /* NAV */
+    header nav{ display:flex; gap:15px; }
+    header nav button{
+      padding:8px 22px;
+      border-radius:30px;
+      border:none;
+      cursor:pointer;
+      font-weight:600;
+    }
+
+    /* Login + Sign up */
+    .login{
+      background:transparent;
+      border:1px solid #F7A600;
+      color:#F7A600;
+    }
+    .login:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 30px rgba(247,166,0,.18);
+      background:rgba(247,166,0,.07);
+    }
+
+    .signup{
+      background:linear-gradient(135deg,#F7A600,#FFD54F);
+      color:black;
+    }
+    .signup:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 35px rgba(247,166,0,.35);
+      filter:saturate(1.05);
+    }
+
+    /* HERO */
+    .hero{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:80px 60px;
+      position:relative;
+      overflow:hidden;
+      border-bottom:1px solid #1f2937;
+      z-index:0;
+    }
+
+    /* Background crossfade layers */
+    .hero-bg{
+      position:absolute;
+      inset:0;
+      z-index:0;
+    }
+    #bgA{
+      background-image:url("https://images.pexels.com/photos/6802049/pexels-photo-6802049.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=1600");
+    }
+    #bgB{
+      background-image:url("https://images.pexels.com/photos/6770775/pexels-photo-6770775.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=1600");
+    }
+    .hero-bg .bg{
+      position:absolute;
+      inset:0;
+      background-size:cover;
+      background-position:center;
+      filter:brightness(1.08) contrast(1.05);
+      opacity:0;
+      transition: opacity 2.2s ease-in-out;
+      will-change: opacity;
+    }
+    .hero-bg .bg.active{ opacity:1; }
+    .hero-bg .overlay{
+      position:absolute;
+      inset:0;
+      z-index:1;
+      background:linear-gradient(90deg, rgba(11,14,17,.92) 0%, rgba(11,14,17,.72) 45%, rgba(11,14,17,.35) 100%);
+    }
+    .hero-bg .glow{
+      position:absolute;
+      inset:0;
+      z-index:2;
+      background:
+        radial-gradient(circle at 80% 20%, rgba(247,166,0,.12), transparent 45%),
+        radial-gradient(circle at 90% 70%, rgba(255,213,79,.08), transparent 50%);
+    }
+
+    /* HERO CARD */
+    .hero-card{
+      background:rgba(18,24,38,0.9);
+      border:1px solid #1f2937;
+      border-radius:20px;
+      padding:50px;
+      max-width:540px;
+      box-shadow:0 10px 40px rgba(0,0,0,.7);
+      position:relative;
+      z-index:3;
+    }
+    .hero-card h2{ font-size:52px; }
+    .hero-card span{ color:#F7A600; }
+    .hero-card p{
+      color:#9CA3AF;
+      margin:20px 0;
+    }
+    .btn{
+      padding:14px 36px;
+      border-radius:30px;
+      border:none;
+      cursor:pointer;
+      background:linear-gradient(135deg,#F7A600,#FFD54F);
+      font-weight:700;
+    }
+    .btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 8px 30px rgba(247,166,0,.4);
+    }
+
+    /* Right-side crypto visual */
+    .hero-visual{
+      width:360px;
+      height:360px;
+      position:relative;
+      z-index:3;
+      border-radius:26px;
+      background:rgba(18,24,38,0.55);
+      border:1px solid rgba(31,41,55,.9);
+      backdrop-filter:blur(10px);
+      box-shadow:0 18px 60px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    .hero-visual::before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:
+        linear-gradient(rgba(156,163,175,.18) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(156,163,175,.14) 1px, transparent 1px);
+      background-size:34px 34px;
+      transform:rotate(12deg);
+      opacity:.10;
+    }
+    .hero-visual::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 25% 25%, rgba(247,166,0,.28), transparent 55%),
+        radial-gradient(circle at 70% 65%, rgba(255,213,79,.22), transparent 55%),
+        radial-gradient(circle at 55% 15%, rgba(247,166,0,.16), transparent 45%);
+      opacity:.9;
+    }
+
+    .chart-line{
+      position:absolute;
+      inset:0;
+      padding:28px;
+      z-index:2;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+    }
+    .chart-line svg{ width:100%; height:100%; opacity:.92; }
+    .chart-line path{
+      stroke:rgba(255,213,79,.95);
+      stroke-width:3.2;
+      fill:none;
+      filter:drop-shadow(0 10px 18px rgba(247,166,0,.18));
+      stroke-linecap:round;
+      stroke-linejoin:round;
+      stroke-dasharray: 900;
+      stroke-dashoffset: 900;
+      animation: draw 3.2s ease forwards;
+    }
+    .chart-line .accent{
+      stroke:rgba(247,166,0,.92);
+      stroke-width:2.4;
+      opacity:.85;
+      stroke-dasharray: 900;
+      stroke-dashoffset: 900;
+      animation: draw 3.8s ease forwards;
+    }
+    @keyframes draw{ to{ stroke-dashoffset: 0; } }
+
+    .chip{
+      position:absolute;
+      z-index:3;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:999px;
+      background:rgba(11,14,17,.55);
+      border:1px solid rgba(31,41,55,.9);
+      backdrop-filter: blur(10px);
+      font-size:12px;
+      color:#EAECEF;
+      box-shadow:0 14px 40px rgba(0,0,0,.35);
+      animation: floaty 4.8s ease-in-out infinite;
+    }
+    .chip .dot{
+      width:10px;height:10px;border-radius:50%;
+      background:rgba(247,166,0,.95);
+      box-shadow:0 0 0 6px rgba(247,166,0,.12);
+    }
+    .chip.two .dot{
+      background:rgba(255,213,79,.95);
+      box-shadow:0 0 0 6px rgba(255,213,79,.12);
+    }
+    .chip.one{ top:26px; left:26px; animation-delay:.0s; }
+    .chip.two{ top:78px; right:24px; animation-delay:.7s; }
+    .chip.three{ bottom:34px; left:30px; animation-delay:1.2s; }
+    @keyframes floaty{
+      0%,100%{ transform:translateY(0); }
+      50%{ transform:translateY(-10px); }
+    }
+
+    /* ===========================
+       MARKETS: Departure Board UI
+       =========================== */
+    .markets{
+      padding:40px 60px 60px;
+      margin-top:-22px;
+      background:#0F141B;
+      border-top:1px solid #1f2937;
+      position:relative;
+      z-index:2;
+    }
+    .markets-head{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
+    }
+    .markets-head h2{
+      font-size:26px;
+      letter-spacing:.3px;
+    }
+    .market-meta{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#9CA3AF;
+      font-size:12px;
+    }
+    .pulse-dot{
+      width:8px;height:8px;border-radius:50%;
+      background:#16c784;
+      box-shadow:0 0 0 0 rgba(22,199,132,.6);
+      animation:pulse 1.4s ease-out infinite;
+    }
+    @keyframes pulse{
+      0%{ box-shadow:0 0 0 0 rgba(22,199,132,.5); }
+      70%{ box-shadow:0 0 0 10px rgba(22,199,132,0); }
+      100%{ box-shadow:0 0 0 0 rgba(22,199,132,0); }
+    }
+
+    .board{
+      border-radius:18px;
+      overflow:hidden;
+      border:1px solid rgba(31,41,55,.95);
+      background:rgba(11,14,17,.85);
+      box-shadow:0 20px 60px rgba(0,0,0,.55);
+      position:relative;
+    }
+
+    /* subtle scanline */
+    .board::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to bottom,
+        rgba(255,255,255,0.02),
+        rgba(255,255,255,0.00),
+        rgba(255,255,255,0.02)
+      );
+      opacity:.35;
+      pointer-events:none;
+    }
+
+    .board-header, .board-row{
+      display:grid;
+      grid-template-columns: 2.1fr 1fr 1.3fr 1.2fr 1.2fr;
+      gap:12px;
+      align-items:center;
+      padding:14px 16px;
+    }
+    .board-header{
+      background:rgba(18,24,38,.65);
+      border-bottom:1px solid rgba(31,41,55,.9);
+      color:#9CA3AF;
+      text-transform:uppercase;
+      letter-spacing:1.4px;
+      font-size:11px;
+    }
+
+    .board-row{
+      border-bottom:1px solid rgba(31,41,55,.65);
+    }
+    .board-row:last-child{ border-bottom:none; }
+
+    /* clickable */
+    .board-row, .digit, .asset-cell{
+      cursor:pointer;
+    }
+    .board-row:hover{
+      background:rgba(247,166,0,.05);
+    }
+
+    .asset-cell{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .asset-cell img{
+      width:26px;height:26px;
+      border-radius:999px;
+      box-shadow:0 10px 20px rgba(0,0,0,.35);
+    }
+    .asset-name{
+      display:flex;
+      flex-direction:column;
+      line-height:1.1;
+      min-width:0;
+    }
+    .asset-name strong{
+      font-size:13px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .asset-name span{
+      font-size:11px;
+      color:#9CA3AF;
+      letter-spacing:.8px;
+    }
+
+    /* Departure board digits */
+    .digit{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: .7px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:flex-end;
+      min-height:28px;
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid rgba(31,41,55,.9);
+      background:
+        linear-gradient(to bottom, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      position:relative;
+      overflow:hidden;
+      box-shadow: inset 0 -10px 18px rgba(0,0,0,.35);
+    }
+
+    /* split-flap line */
+    .digit::after{
+      content:"";
+      position:absolute;
+      left:0; right:0;
+      top:50%;
+      height:1px;
+      background:rgba(255,255,255,.08);
+    }
+
+    /* glow style */
+    .digit.price{ color:#EAECEF; text-shadow:0 0 18px rgba(255,213,79,.08); }
+    .digit.high{ color:#16c784; text-shadow:0 0 18px rgba(22,199,132,.10); }
+    .digit.low{ color:#ea3943; text-shadow:0 0 18px rgba(234,57,67,.10); }
+    .digit.sym{ justify-content:center; color:#F7A600; text-shadow:0 0 18px rgba(247,166,0,.16); }
+
+    /* flip animation when values update */
+    .flip{ animation: flip 420ms ease; }
+    @keyframes flip{
+      0%{ transform: translateY(0); filter: brightness(1); }
+      40%{ transform: translateY(-5px) skewX(-1deg); filter: brightness(1.25); }
+      100%{ transform: translateY(0); filter: brightness(1); }
+    }
+
+    /* shimmer sweep on update */
+    .shimmer::before{
+      content:"";
+      position:absolute;
+      inset:-60% -20%;
+      background:linear-gradient(110deg, transparent 35%, rgba(255,255,255,.12) 48%, transparent 60%);
+      transform: rotate(10deg);
+      animation: sweep 520ms ease;
+    }
+    @keyframes sweep{
+      from{ transform: translateX(-20%) rotate(10deg); opacity:.0; }
+      40%{ opacity:.9; }
+      to{ transform: translateX(30%) rotate(10deg); opacity:0; }
+    }
+
+    .board-empty{
+      padding:18px 16px;
+      color:#9CA3AF;
+      font-size:13px;
+    }
+
+    /* ===== Bottom / Website Normal Trading Footer Stuff ===== */
+    .bottom-wrap{
+      background:#0B0E11;
+      border-top:1px solid #1f2937;
+    }
+
+    .trust-strip{
+      padding:26px 60px;
+      background:rgba(15,20,27,.9);
+      border-bottom:1px solid #1f2937;
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:14px;
+    }
+
+    .trust-item{
+      border:1px solid rgba(31,41,55,.85);
+      background:rgba(18,24,38,.65);
+      border-radius:16px;
+      padding:16px;
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+    }
+    .trust-item h4{
+      font-size:13px;
+      margin-bottom:6px;
+      color:#EAECEF;
+    }
+    .trust-item p{
+      font-size:12px;
+      color:#9CA3AF;
+      line-height:1.5;
+    }
+    .trust-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:10px;
+      color:#F7A600;
+      font-weight:700;
+      letter-spacing:.4px;
+    }
+    .trust-dot{
+      width:9px;height:9px;border-radius:50%;
+      background:linear-gradient(135deg,#F7A600,#FFD54F);
+      box-shadow:0 0 0 6px rgba(247,166,0,.12);
+    }
+
+    /* ✅ Expandable fuller writeups (hover + tap) */
+    .trust-more{
+      margin-top:10px;
+      border-top:1px solid rgba(31,41,55,.65);
+      padding-top:10px;
+
+      max-height:0;
+      opacity:0;
+      overflow:hidden;
+      transform: translateY(-6px);
+      transition: max-height 320ms ease, opacity 260ms ease, transform 260ms ease;
+      will-change: max-height, opacity, transform;
+    }
+    .trust-item:hover .trust-more,
+    .trust-item.active .trust-more{
+      max-height:220px;
+      opacity:1;
+      transform: translateY(0);
+    }
+    .trust-item:hover{
+      transform:translateY(-1px);
+      box-shadow:0 14px 40px rgba(0,0,0,.35);
+      border-color:rgba(247,166,0,.20);
+    }
+
+    .footer-grid{
+      padding:44px 60px 22px;
+      display:grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1.2fr;
+      gap:22px;
+    }
+    .footer-col h3{
+      font-size:14px;
+      margin-bottom:12px;
+      letter-spacing:.6px;
+      color:#EAECEF;
+    }
+    .footer-col p, .footer-col a{
+      font-size:12px;
+      color:#9CA3AF;
+      line-height:1.8;
+    }
+    .footer-col a:hover{ color:#EAECEF; }
+
+    .newsletter{
+      display:flex;
+      gap:10px;
+      margin-top:12px;
+    }
+    .newsletter input{
+      flex:1;
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid rgba(31,41,55,.9);
+      background:#0B0E11;
+      color:#EAECEF;
+    }
+    .newsletter input:focus{
+      outline:none;
+      border-color:#F7A600;
+    }
+    .newsletter button{
+      padding:12px 14px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      background:linear-gradient(135deg,#F7A600,#FFD54F);
+      font-weight:700;
+      color:#0B0E11;
+    }
+    .newsletter button:hover{
+      transform:translateY(-1px);
+      box-shadow:0 10px 28px rgba(247,166,0,.22);
+    }
+
+    .risk{
+      padding:0 60px 18px;
+      color:#6B7280;
+      font-size:11px;
+      line-height:1.7;
+    }
+    .footer-bar{
+      border-top:1px solid #1f2937;
+      padding:16px 60px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      color:#6B7280;
+      font-size:12px;
+    }
+    .social{
+      display:flex;
+      gap:10px;
+    }
+    .social a{
+      padding:8px 10px;
+      border:1px solid rgba(31,41,55,.85);
+      background:rgba(18,24,38,.6);
+      border-radius:12px;
+      color:#9CA3AF;
+      cursor:pointer;
+    }
+    .social a:hover{
+      color:#EAECEF;
+      border-color:rgba(247,166,0,.35);
+      box-shadow:0 10px 25px rgba(247,166,0,.10);
+    }
+
+    /* MODALS */
+    .modal{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.75);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      opacity:0;
+      pointer-events:none;
+      z-index:300;
+    }
+    .modal.active{
+      opacity:1;
+      pointer-events:auto;
+    }
+    .modal-box{
+      background:rgba(18,24,38,0.95);
+      border:1px solid #1f2937;
+      padding:35px;
+      border-radius:20px;
+      width:90%;
+      max-width:420px;
+      box-shadow:0 20px 60px rgba(0,0,0,.8);
+    }
+    .modal-box input{
+      width:100%;
+      padding:12px;
+      margin:10px 0;
+      background:#0B0E11;
+      border:1px solid #1f2937;
+      border-radius:10px;
+      color:white;
+    }
+    .modal-box input:focus{
+      outline:none;
+      border-color:#F7A600;
+    }
+    .modal-box button{
+      width:100%;
+      padding:12px;
+      background:linear-gradient(135deg,#F7A600,#FFD54F);
+      border:none;
+      border-radius:30px;
+      font-weight:700;
+      cursor:pointer;
+    }
+    .modal-box button:hover{
+      transform:translateY(-2px);
+      box-shadow:0 10px 30px rgba(247,166,0,.25);
+    }
+    .close-btn{
+      float:right;
+      font-size:22px;
+      cursor:pointer;
+    }
+    .form-msg{
+      margin-top:10px;
+      font-size:12px;
+      color:#FCA5A5;
+      min-height:16px;
+    }
+
+    /* LOADING */
+    #loadingPage{
+      position:fixed;
+      inset:0;
+      background:#0B0E11;
+      display:none;
+      justify-content:center;
+      align-items:center;
+      flex-direction:column;
+      z-index:999;
+    }
+    #loadingPage.active{ display:flex; }
+    .loading-brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:16px;
+    }
+    .loading-mark{
+      width:38px;
+      height:38px;
+      border-radius:12px;
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(255,213,79,.22);
+      box-shadow:0 12px 28px rgba(247,166,0,.22);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,213,79,.95), rgba(247,166,0,.9) 50%, rgba(247,166,0,.35) 100%),
+        linear-gradient(135deg, rgba(247,166,0,.9), rgba(255,213,79,.8));
+      animation: glowPulse 2.2s ease-in-out infinite;
+    }
+    .loading-mark::before{
+      content:"";
+      position:absolute;
+      inset:10px;
+      border-radius:8px;
+      background:
+        linear-gradient(135deg,
+          transparent 0%,
+          transparent 42%,
+          rgba(255,255,255,.85) 42%,
+          rgba(255,255,255,.85) 48%,
+          transparent 48%,
+          transparent 100%);
+      opacity:.32;
+      transform:skewX(-12deg);
+    }
+    .loading-mark::after{
+      content:"";
+      position:absolute;
+      inset:-20%;
+      background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,.35) 45%, transparent 60%);
+      transform:rotate(18deg);
+    }
+    .loading-text{
+      font-weight:800;
+      letter-spacing:.6px;
+      font-size:18px;
+      line-height:1.05;
+      color:#F7A600;
+      text-transform:uppercase;
+    }
+    .loading-sub{
+      display:block;
+      font-size:10px;
+      letter-spacing:1.6px;
+      color:#9CA3AF;
+      margin-top:3px;
+    }
+    .loader{
+      border:6px solid #1f2937;
+      border-top:6px solid #F7A600;
+      width:50px;
+      height:50px;
+      border-radius:50%;
+      animation:spin 1s linear infinite;
+    }
+    @keyframes spin{ to { transform:rotate(360deg); } }
+    @keyframes glowPulse{
+      0%,100%{ transform:translateY(0); box-shadow:0 12px 28px rgba(247,166,0,.22); }
+      50%{ transform:translateY(-2px); box-shadow:0 16px 36px rgba(247,166,0,.32); }
+    }
+
+    /* responsive */
+    @media (max-width: 1100px){
+      .trust-strip{ grid-template-columns: repeat(2, 1fr); padding:22px 20px; }
+      .footer-grid{ grid-template-columns: repeat(2, 1fr); padding:36px 20px 18px; }
+      .risk{ padding:0 20px 18px; }
+      .footer-bar{ padding:16px 20px; flex-direction:column; align-items:flex-start; }
+    }
+    @media (max-width: 980px){
+      header{ padding:12px 20px; }
+      .brand{ margin-left:0; }
+      .hero{ padding:60px 20px; flex-direction:column; gap:30px; }
+      .hero-card{ padding:35px; }
+      .hero-visual{ width:min(360px, 92vw); height:min(360px, 92vw); }
+      .markets{ padding:34px 20px 50px; margin-top:-16px; }
+      .board-header, .board-row{ grid-template-columns: 2.2fr .9fr 1.2fr 1.1fr 1.1fr; }
+    }
+    @media (max-width: 620px){
+      .board-header, .board-row{ grid-template-columns: 2.2fr .9fr 1.1fr; }
+      .hide-sm{ display:none; }
+    }
+    /* =========================================
+       PRO RESPONSIVE POLISH (all devices)
+       - no color changes
+       - prevents messy wrap/squeeze
+    ========================================= */
+
+    /* Better text scaling across screens */
+    .hero-card h2{
+      /* scales from ~34px on small phones to 52px on desktop */
+      font-size: clamp(34px, 5vw, 52px);
+      line-height: 1.08;
+    }
+
+    /* Hero card padding scales so it never feels cramped */
+    .hero-card{
+      padding: clamp(26px, 4vw, 50px);
+    }
+
+    /* Header: prevent ugly wrapping + keep buttons usable */
+    header{
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* Brand + nav behave nicely when space is tight */
+    header nav{
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    /* Buttons scale slightly on smaller screens */
+    header nav button{
+      padding: 8px 18px;
+      white-space: nowrap;
+    }
+
+    /* Ultra small devices: tighten a bit more to avoid wrap */
+    @media (max-width: 420px){
+      header nav button{
+        padding: 7px 14px;
+        font-size: 12px;
+      }
+    }
+
+    /* Markets board: avoid "squeezed columns" on very small screens */
+    @media (max-width: 520px){
+      .board{
+        overflow-x: auto;             /* allow smooth horizontal scroll */
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* keep the board readable instead of compressing everything */
+      .board-header, .board-row{
+        min-width: 560px;             /* keeps columns clean */
+      }
+    }
+
+    /* Trust strip: force clean stacking when needed */
+    @media (max-width: 700px){
+      .trust-strip{
+        grid-template-columns: 1fr;   /* one per row for clean look */
+      }
+    }
+
+    /* Footer grid: single column on very small devices for neat layout */
+    @media (max-width: 560px){
+      .footer-grid{
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+    }
+
+    /* Modals: comfortable on phones */
+    .modal-box{
+      width: min(92vw, 420px);
+      padding: clamp(22px, 4vw, 35px);
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark" aria-hidden="true"></div>
+    <div>
+      <div class="brand-text">Kinetix Exchange</div>
+      <span class="brand-sub">TRADING</span>
+    </div>
+  </div>
+
+  <nav>
+    <button class="login" id="loginBtn" type="button" onclick="openLogin()">Login</button>
+    <button class="signup" id="signupBtn" type="button" onclick="openSignup()">Sign Up</button>
+  </nav>
+</header>
+
+<section class="hero" id="hero">
+  <div class="hero-bg" aria-hidden="true">
+    <div class="bg active" id="bgA"></div>
+    <div class="bg" id="bgB"></div>
+    <div class="overlay"></div>
+    <div class="glow"></div>
+  </div>
+
+  <div class="hero-card">
+    <h2>Trade Crypto<br><span>Smarter & Faster</span></h2>
+    <p>Professional-grade platform for modern traders.</p>
+    <button class="btn" id="heroSignupBtn" type="button" onclick="openSignup()">Get Started</button>
+  </div>
+
+  <div class="hero-visual" aria-hidden="true">
+    <div class="chip one"><span class="dot"></span> Live Markets</div>
+    <div class="chip two"><span class="dot"></span> Fast Execution</div>
+    <div class="chip three"><span class="dot"></span> Secure Wallets</div>
+
+    <div class="chart-line">
+      <svg viewBox="0 0 600 600" preserveAspectRatio="none">
+        <path d="M40,420 C110,380 160,520 230,420 C300,320 320,430 380,320 C450,180 510,260 560,160" />
+        <path class="accent" d="M40,460 C120,420 170,520 240,460 C300,400 360,460 420,380 C470,320 520,350 560,300" />
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- MARKETS (Departure Board Style) -->
+<section class="markets">
+  <div class="markets-head">
+    <h2>Markets</h2>
+    <div class="market-meta">
+      <span class="pulse-dot" aria-hidden="true"></span>
+      <span id="marketStatus">Connecting…</span>
+      <span>•</span>
+      <span id="marketUpdated">—</span>
+    </div>
+  </div>
+
+  <div class="board" id="marketBoard">
+    <div class="board-header">
+      <div>Asset</div>
+      <div>Symbol</div>
+      <div>Price</div>
+      <div class="hide-sm">High</div>
+      <div class="hide-sm">Low</div>
+    </div>
+
+    <div id="boardBody">
+      <div class="board-empty">Loading markets…</div>
+    </div>
+  </div>
+</section>
+
+<!-- Bottom website section -->
+<section class="bottom-wrap">
+  <div class="trust-strip">
+    <div class="trust-item" data-trust="security" tabindex="0">
+      <div class="trust-badge"><span class="trust-dot"></span> Security</div>
+      <h4>Cold storage & protection</h4>
+      <p>Assets protected with best-practice controls and monitoring designed for modern exchanges.</p>
+
+      <!-- ✅ fuller writeup (shows on hover/tap) -->
+      <div class="trust-more">
+        <p><strong>Layered custody.</strong> The majority of funds are held in cold storage with controlled access and strict operational checks.</p>
+        <p><strong>Real-time monitoring.</strong> Risk signals, withdrawal patterns, and login behavior are continuously reviewed to reduce exposure.</p>
+        <p><strong>Account controls.</strong> Password hygiene, device checks, and optional extra verification help keep your account protected.</p>
+      </div>
+    </div>
+
+    <div class="trust-item" data-trust="speed" tabindex="0">
+      <div class="trust-badge"><span class="trust-dot"></span> Speed</div>
+      <h4>Fast execution</h4>
+      <p>Real-time pricing, quick order routing, and a smooth experience across devices.</p>
+
+      <div class="trust-more">
+        <p><strong>Low-latency UI.</strong> Live prices update smoothly so you can react without delays or refresh spam.</p>
+        <p><strong>Efficient order flow.</strong> Clean request handling keeps actions quick—even when markets move fast.</p>
+        <p><strong>Mobile friendly.</strong> The same performance mindset carries across desktop and smaller screens.</p>
+      </div>
+    </div>
+
+    <div class="trust-item" data-trust="support" tabindex="0">
+      <div class="trust-badge"><span class="trust-dot"></span> Support</div>
+      <h4>Always-on help</h4>
+      <p>Get help when you need it—account, deposits, trading, and platform guidance.</p>
+
+      <div class="trust-more">
+        <p><strong>Clear guidance.</strong> Simple explanations for deposits, confirmations, and common trading actions.</p>
+        <p><strong>Fast resolution.</strong> Direct routes to fix login issues, account questions, and platform errors.</p>
+        <p><strong>Status clarity.</strong> Straight-to-the-point updates when services are slow or under maintenance.</p>
+      </div>
+    </div>
+
+    <div class="trust-item" data-trust="transparency" tabindex="0">
+      <div class="trust-badge"><span class="trust-dot"></span> Transparency</div>
+      <h4>Clear fees & pricing</h4>
+      <p>See price movements, highs/lows, and platform updates—no confusing surprises.</p>
+
+      <div class="trust-more">
+        <p><strong>Readable markets.</strong> Prices, highs, and lows are displayed clearly so you understand movement at a glance.</p>
+        <p><strong>Predictable costs.</strong> No hidden “gotchas”—fees and rules are presented in plain language.</p>
+        <p><strong>Honest messaging.</strong> If the feed is unstable, you’ll see it—plus the last known good prices.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h3>Kinetix Exchange</h3>
+      <p>Trade with confidence using a clean interface built for speed, clarity, and modern market flows.</p>
+    </div>
+
+
+    <div class="footer-col">
+      <h3>Newsletter</h3>
+      <p>Get market updates and platform news. No spam.</p>
+      <div class="newsletter">
+        <input id="newsEmail" type="email" placeholder="you@example.com" />
+        <button type="button" onclick="subscribeNews()">Join</button>
+      </div>
+      <p id="newsMsg" style="margin-top:10px;font-size:12px;color:#6B7280;"></p>
+    </div>
+  </div>
+
+  <div class="risk">
+    <strong>Risk Disclosure:</strong> Cryptocurrency trading involves substantial risk and may result in the loss of your capital.
+    Prices can be highly volatile. This site content is for informational purposes only and does not constitute financial advice.
+    Please trade responsibly and consider your experience level and risk tolerance.
+  </div>
+
+  <div class="footer-bar">
+    <div>© 2026 Kinetix Exchange • <span style="color:#9CA3AF;">All rights reserved.</span></div>
+    <!-- ✅ Terms + Privacy only (Support removed) -->
+    <div class="social">
+      <a href="javascript:void(0)" id="termsLink">Terms</a>
+      <a href="javascript:void(0)" id="privacyLink">Privacy</a>
+    </div>
+  </div>
+</section>
+
+<!-- Signup -->
+<div class="modal" id="signupModal">
+  <div class="modal-box">
+    <span class="close-btn" onclick="closeModals()">&times;</span>
+    <h2>Create Account</h2>
+
+    <form onsubmit="handleSignup(); return false;">
+      <input id="reg-firstname" placeholder="First Name">
+      <input id="reg-lastname" placeholder="Last Name">
+      <input id="reg-email" type="email" placeholder="Email">
+
+      <input id="reg-username" placeholder="Username">
+      <input id="reg-password" type="password" placeholder="Password">
+      <input id="reg-confirm-password" type="password" placeholder="Confirm Password">
+
+      <button type="submit">Create Account</button>
+      <div class="form-msg" id="signupMsg"></div>
+    </form>
+  </div>
+</div>
+
+<!-- Login -->
+<div class="modal" id="loginModal">
+  <div class="modal-box">
+    <span class="close-btn" onclick="closeModals()">&times;</span>
+    <h2>Login</h2>
+    <form onsubmit="handleLogin(); return false;">
+      <input id="log-username" placeholder="Username">
+      <input id="log-password" type="password" placeholder="Password">
+      <button type="submit">Login</button>
+      <div class="form-msg" id="loginMsg"></div>
+    </form>
+  </div>
+</div>
+
+<!-- ✅ Legal Modal (Terms / Privacy writeups) -->
+<div class="modal" id="legalModal">
+  <div class="modal-box">
+    <span class="close-btn" onclick="closeLegal()">&times;</span>
+    <h2 id="legalTitle">Legal</h2>
+    <div id="legalBody" style="margin-top:12px;color:#9CA3AF;font-size:12px;line-height:1.7;">
+      <!-- injected -->
+    </div>
+    <div style="margin-top:16px;">
+      <button onclick="closeLegal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Loading -->
+<div id="loadingPage">
+  <div class="loading-brand">
+    <div class="loading-mark"></div>
+    <div>
+      <div class="loading-text">Kinetix Exchange</div>
+      <span class="loading-sub">TRADING</span>
+    </div>
+  </div>
+  <div class="loader"></div>
+</div>
+
+<script>
+  const signupModal = document.getElementById("signupModal");
+  const loginModal = document.getElementById("loginModal");
+  const loadingPage = document.getElementById("loadingPage");
+
+  const legalModal = document.getElementById("legalModal");
+  const legalTitle = document.getElementById("legalTitle");
+  const legalBody  = document.getElementById("legalBody");
+
+  /* ✅ FIX: these were previously after </html> (browser printed them as text)
+     Put them inside the script so closeModals()/handleLogin()/handleSignup() works. */
+  function clearFormMsgs(){
+    const s = document.getElementById("signupMsg");
+    const l = document.getElementById("loginMsg");
+    if(s) s.textContent = "";
+    if(l) l.textContent = "";
+  }
+
+  function setFormMsg(id, msg){
+    const el = document.getElementById(id);
+    if(el) el.textContent = msg || "";
+  }
+
+  function openSignup(){
+    closeModals();
+    const m = document.getElementById("signupModal");
+    if(m) m.classList.add("active");
+  }
+  function openLogin(){
+    closeModals();
+    const m = document.getElementById("loginModal");
+    if(m) m.classList.add("active");
+  }
+  function closeModals(){
+    signupModal.classList.remove("active");
+    loginModal.classList.remove("active");
+    clearFormMsgs();
+    closeLegal();
+  }
+  function showLoading(){ closeModals(); loadingPage.classList.add("active"); }
+
+  function openLegal(type){
+    closeModals();
+    legalModal.classList.add("active");
+
+    if(type === "terms"){
+      legalTitle.textContent = "Terms";
+      legalBody.innerHTML = `
+        <p><strong>Platform use.</strong> By using Kinetix Exchange, you agree to follow all applicable laws and use the service responsibly.</p>
+        <p><strong>Your account.</strong> You’re responsible for maintaining accurate details and keeping your login credentials secure.</p>
+        <p><strong>Risk notice.</strong> Crypto prices are volatile—trading may result in loss. Content is informational and not financial advice.</p>
+        <p><strong>Service availability.</strong> We may update, pause, or maintain features to keep the platform stable and secure.</p>
+      `;
+    } else {
+      legalTitle.textContent = "Privacy";
+      legalBody.innerHTML = `
+        <p><strong>What we collect.</strong> Basic account details (like username/email) and activity signals needed to run and secure the platform.</p>
+        <p><strong>How it’s used.</strong> For authentication, fraud/risk checks, support, and improving performance and reliability.</p>
+        <p><strong>Data protection.</strong> We use security controls to help protect your data, and we avoid unnecessary collection.</p>
+        <p><strong>Your choices.</strong> You can request updates to your account details and control what you submit through the site.</p>
+      `;
+    }
+  }
+
+  function closeLegal(){
+    legalModal.classList.remove("active");
+  }
+
+  const loginBtn = document.getElementById("loginBtn");
+  const signupBtn = document.getElementById("signupBtn");
+  const heroSignupBtn = document.getElementById("heroSignupBtn");
+
+  if(loginBtn) loginBtn.addEventListener("click", openLogin);
+  if(signupBtn) signupBtn.addEventListener("click", openSignup);
+  if(heroSignupBtn) heroSignupBtn.addEventListener("click", openSignup);
+
+  // Background crossfade
+  const bgA = document.getElementById("bgA");
+  const bgB = document.getElementById("bgB");
+
+  const heroBackgrounds = [
+    "https://images.pexels.com/photos/6802049/pexels-photo-6802049.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=1600",
+    "https://images.pexels.com/photos/6770775/pexels-photo-6770775.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=1600",
+    "https://images.pexels.com/photos/7567434/pexels-photo-7567434.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=1600",
+    "https://images.pexels.com/photos/8370752/pexels-photo-8370752.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=1600"
+  ];
+
+  let bgIdx = 0;
+  let showingA = true;
+
+  function setBg(el, url){ el.style.backgroundImage = `url("${url}")`; }
+
+  function startHeroBackgrounds(){
+    setBg(bgA, heroBackgrounds[0]); bgA.classList.add("active");
+    setBg(bgB, heroBackgrounds[1]); bgB.classList.remove("active");
+    bgIdx = 1;
+
+    setInterval(() => {
+      bgIdx = (bgIdx + 1) % heroBackgrounds.length;
+      const nextUrl = heroBackgrounds[bgIdx];
+
+      if(showingA){
+        setBg(bgB, nextUrl);
+        bgB.classList.add("active");
+        bgA.classList.remove("active");
+      }else{
+        setBg(bgA, nextUrl);
+        bgA.classList.add("active");
+        bgB.classList.remove("active");
+      }
+      showingA = !showingA;
+    }, 7000);
+  }
+  startHeroBackgrounds();
+
+  /* ===========================
+     Markets: Board JS (resilient)
+     =========================== */
+  const boardBody = document.getElementById("boardBody");
+  const marketStatus = document.getElementById("marketStatus");
+  const marketUpdated = document.getElementById("marketUpdated");
+
+  const prevMap = new Map();
+  let lastGoodHTML = "";
+  let hadDataOnce = false;
+  let inFlight = false;
+
+  function fmtMoney(n){
+    const num = Number(n);
+    if (!isFinite(num)) return "—";
+    return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function fmtSym(s){ return (s || "").toUpperCase(); }
+
+  function stampUpdated(){
+    const d = new Date();
+    marketUpdated.textContent = d.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit", second:"2-digit"});
+  }
+
+  function rowTemplate(c){
+    const key = (c.symbol || c.id || c.name || "").toLowerCase();
+    const prev = prevMap.get(key) || {};
+
+    const price = Number(c.current_price);
+    const high  = Number(c.high_24h);
+    const low   = Number(c.low_24h);
+
+    const priceChanged = prev.price !== undefined && price !== prev.price;
+    const highChanged  = prev.high  !== undefined && high  !== prev.high;
+    const lowChanged   = prev.low   !== undefined && low   !== prev.low;
+
+    prevMap.set(key, { price, high, low });
+
+    return `
+      <div class="board-row" data-key="${key}">
+        <div class="asset-cell">
+          <img src="${c.image || ""}" alt="">
+          <div class="asset-name">
+            <strong>${c.name || "—"}</strong>
+            <span>${(c.id || "").toUpperCase() || "MARKET"}</span>
+          </div>
+        </div>
+
+        <div class="digit sym" data-field="sym">${fmtSym(c.symbol)}</div>
+
+        <div class="digit price ${priceChanged ? "flip shimmer" : ""}" data-field="price">
+          $${fmtMoney(c.current_price)}
+        </div>
+
+        <div class="digit high hide-sm ${highChanged ? "flip shimmer" : ""}" data-field="high">
+          $${fmtMoney(c.high_24h)}
+        </div>
+
+        <div class="digit low hide-sm ${lowChanged ? "flip shimmer" : ""}" data-field="low">
+          $${fmtMoney(c.low_24h)}
+        </div>
+      </div>
+    `;
+  }
+
+  async function loadMarkets(){
+    if(inFlight) return;
+    inFlight = true;
+
+    try{
+      marketStatus.textContent = "Live feed";
+      const res = await fetch("/api/markets", { cache: "no-store" });
+
+      if(res.status === 429){
+        marketStatus.textContent = "Rate limited • showing last prices";
+        if(lastGoodHTML) boardBody.innerHTML = lastGoodHTML;
+        return;
+      }
+      if(!res.ok){
+        marketStatus.textContent = "Reconnecting…";
+        if(lastGoodHTML) boardBody.innerHTML = lastGoodHTML;
+        return;
+      }
+
+      const text = await res.text();
+      let coins;
+      try{ coins = JSON.parse(text); }
+      catch{
+        marketStatus.textContent = "Reconnecting…";
+        if(lastGoodHTML) boardBody.innerHTML = lastGoodHTML;
+        return;
+      }
+
+      if(!Array.isArray(coins) || coins.length === 0){
+        if(hadDataOnce && lastGoodHTML){
+          marketStatus.textContent = "Feed unstable • showing last prices";
+          boardBody.innerHTML = lastGoodHTML;
+          return;
+        }
+        marketStatus.textContent = "No data";
+        boardBody.innerHTML = `<div class="board-empty">No market data available.</div>`;
+        return;
+      }
+
+      hadDataOnce = true;
+      const html = coins.slice(0, 10).map(rowTemplate).join("");
+      boardBody.innerHTML = html;
+      lastGoodHTML = html;
+
+      stampUpdated();
+    }catch(e){
+      marketStatus.textContent = "Reconnecting…";
+      if(lastGoodHTML) boardBody.innerHTML = lastGoodHTML;
+    } finally {
+      inFlight = false;
+    }
+  }
+
+  // start + poll
+  loadMarkets();
+  setInterval(loadMarkets, 8000);
+
+  /* Any click on coin/price/high/low opens Create Account */
+  document.getElementById("marketBoard").addEventListener("click", (e) => {
+    const row = e.target.closest(".board-row");
+    if(!row) return;
+    openSignup();
+  });
+
+  /* Newsletter */
+  function subscribeNews(){
+    const email = document.getElementById("newsEmail").value.trim();
+    const msg = document.getElementById("newsMsg");
+    if(!email) return (msg.textContent = "Please enter your email.");
+    if(!/^\S+@\S+\.\S+$/.test(email)) return (msg.textContent = "Enter a valid email address.");
+    msg.textContent = "Subscribed! You’ll receive updates soon.";
+    document.getElementById("newsEmail").value = "";
+  }
+
+  /* Auth */
+  async function handleSignup(){
+    setFormMsg("signupMsg", "");
+    const firstname = document.getElementById("reg-firstname").value.trim();
+    const lastname  = document.getElementById("reg-lastname").value.trim();
+    const email     = document.getElementById("reg-email").value.trim();
+
+    const username = document.getElementById("reg-username").value.trim();
+    const password = document.getElementById("reg-password").value;
+    const confirm  = document.getElementById("reg-confirm-password").value;
+
+    if(!firstname || !lastname || !email || !username || !password || !confirm){
+      setFormMsg("signupMsg", "Please fill all fields.");
+      return;
+    }
+    if(!/^\S+@\S+\.\S+$/.test(email)){
+      setFormMsg("signupMsg", "Enter a valid email address.");
+      return;
+    }
+    if(password !== confirm){
+      setFormMsg("signupMsg", "Passwords do not match.");
+      return;
+    }
+
+    const res = await fetch("/api/signup", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        firstname,
+        lastname,
+        email,
+        username,
+        password,
+        confirm_password: confirm
+      })
+    });
+
+    const data = await res.json();
+    if(data.success){
+      showLoading();
+      setTimeout(()=>window.location.href="/dashboard",1500);
+    } else {
+      setFormMsg("signupMsg", data.message || "Signup failed.");
+    }
+  }
+
+  async function handleLogin(){
+    setFormMsg("loginMsg", "");
+    const username = document.getElementById("log-username").value.trim();
+    const password = document.getElementById("log-password").value;
+
+    if(!username || !password){
+      setFormMsg("loginMsg", "Enter your username and password.");
+      return;
+    }
+
+    const res = await fetch("/api/login", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({username,password})
+    });
+
+    const data = await res.json();
+    if(data.success){
+      showLoading();
+      setTimeout(()=>window.location.href="/dashboard",1500);
+    } else {
+      setFormMsg("loginMsg", data.message || "Login failed.");
+    }
+  }
+
+  window.addEventListener("pageshow",()=>{
+    loadingPage.classList.remove("active");
+    document.querySelectorAll("input").forEach(i=>i.value="");
+    clearFormMsgs();
+  });
+
+  /* ✅ Trust cards: tap to expand/collapse smoothly (hover already works) */
+  const trustItems = document.querySelectorAll(".trust-item");
+  trustItems.forEach(item => {
+    const toggle = () => {
+      const isActive = item.classList.contains("active");
+      trustItems.forEach(i => i.classList.remove("active"));
+      if(!isActive) item.classList.add("active");
+    };
+    item.addEventListener("click", toggle);
+    item.addEventListener("keydown", (e) => {
+      if(e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+    });
+  });
+
+  /* ✅ Terms / Privacy click writeups */
+  document.getElementById("termsLink").addEventListener("click", () => openLegal("terms"));
+  document.getElementById("privacyLink").addEventListener("click", () => openLegal("privacy"));
+
+  /* close legal if backdrop clicked */
+  legalModal.addEventListener("click", (e) => {
+    if(e.target === legalModal) closeLegal();
+  });
+</script>
+
+</body>
+</html>

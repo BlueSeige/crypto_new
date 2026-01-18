@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up - CryptoX</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+  body {
+    background: linear-gradient(135deg, #020617, #0f172a);
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
+
+  .container {
+    background: rgba(15, 23, 42, 0.9);
+    padding: 40px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 0 40px rgba(56, 189, 248, 0.15);
+    animation: fadeUp 0.8s ease;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  .input-group {
+    position: relative;
+    margin-bottom: 25px;
+  }
+
+  .input-group input {
+    width: 100%;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    color: white;
+    outline: none;
+  }
+
+  .input-group label {
+    position: absolute;
+    left: 15px;
+    top: 14px;
+    color: #94a3b8;
+    pointer-events: none;
+    transition: 0.3s ease;
+  }
+
+  .input-group input:focus + label,
+  .input-group input:valid + label {
+    top: -10px;
+    left: 10px;
+    font-size: 12px;
+    background: #0f172a;
+    padding: 0 6px;
+    color: #38bdf8;
+  }
+
+  .strength {
+    font-size: 12px;
+    margin-top: 5px;
+  }
+
+  .weak { color: red; }
+  .medium { color: orange; }
+  .strong { color: #38bdf8; }
+
+  .toggle {
+    position: absolute;
+    right: 15px;
+    top: 14px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #38bdf8;
+  }
+
+  button {
+    width: 100%;
+    padding: 14px;
+    border-radius: 30px;
+    border: none;
+    font-weight: bold;
+    background: #38bdf8;
+    cursor: pointer;
+    transition: 0.3s ease;
+  }
+
+  button:hover {
+    transform: scale(1.05);
+  }
+
+  .error {
+    animation: shake 0.3s;
+  }
+
+  @keyframes fadeUp {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+  }
+
+  @keyframes shake {
+    0%,100% {transform: translateX(0);}
+    25% {transform: translateX(-5px);}
+    75% {transform: translateX(5px);}
+  }
+
+  .login-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+  }
+
+  .login-link a {
+    color: #38bdf8;
+    text-decoration: none;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Create Account</h2>
+
+  <form method="POST" onsubmit="return validateForm()">
+    <div class="input-group">
+      <input type="text" name="username" required>
+      <label>Username</label>
+    </div>
+
+    <div class="input-group">
+      <input type="password" id="password" name="password" required oninput="checkStrength()">
+      <label>Password</label>
+      <span class="toggle" onclick="togglePassword()">Show</span>
+      <div id="strength" class="strength"></div>
+    </div>
+
+    <button id="btn">Create Account</button>
+  </form>
+
+  <div class="login-link">
+    Already have an account? <a href="/login">Login</a>
+  </div>
+</div>
+
+<script>
+  function togglePassword() {
+    const pass = document.getElementById("password");
+    pass.type = pass.type === "password" ? "text" : "password";
+  }
+
+  function checkStrength() {
+    const password = document.getElementById("password").value;
+    const strength = document.getElementById("strength");
+
+    if (password.length < 5) {
+      strength.textContent = "Weak password";
+      strength.className = "strength weak";
+    } else if (password.length < 8) {
+      strength.textContent = "Medium password";
+      strength.className = "strength medium";
+    } else {
+      strength.textContent = "Strong password";
+      strength.className = "strength strong";
+    }
+  }
+
+  function validateForm() {
+    const password = document.getElementById("password").value;
+    const container = document.querySelector(".container");
+
+    if (password.length < 5) {
+      container.classList.add("error");
+      setTimeout(() => container.classList.remove("error"), 300);
+      return false;
+    }
+
+    document.getElementById("btn").innerText = "Creating...";
+    return true;
+  }
+</script>
+
+</body>
+</html>

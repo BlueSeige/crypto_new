@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kinetix Exchange Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+    html, body{width:100%;height:100%;}
+    body{background:#0B0E11;color:#EAECEF; overflow-x:hidden;}
+    a{color:inherit;text-decoration:none}
+
+    /* Top bar */
+    .topbar{
+      height:64px;
+      display:flex;align-items:center;justify-content:space-between;
+      padding:0 22px;
+      background:rgba(18,24,38,0.9);
+      border-bottom:none;
+      position:sticky;top:0;z-index:60;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      left:0; right:0;
+      transform: translateZ(0);
+      will-change: transform;
+      gap:12px;
+    }
+
+    /* ✅ Mobile menu button (hidden on desktop) */
+    .menu-btn{
+      display:none;
+      align-items:center;
+      justify-content:center;
+      width:44px;
+      height:44px;
+      border-radius:14px;
+      border:1px solid #1f2937;
+      background:#121826;
+      color:#EAECEF;
+      cursor:pointer;
+      flex:0 0 auto;
+    }
+    .menu-btn:hover{border-color:#F7A600;transform:translateY(-1px)}
+    .menu-icon{
+      width:18px;height:18px;position:relative;
+    }
+    .menu-icon span{
+      position:absolute;left:0;right:0;height:2px;border-radius:2px;
+      background:#EAECEF;
+    }
+    .menu-icon span:nth-child(1){top:3px;}
+    .menu-icon span:nth-child(2){top:8px;}
+    .menu-icon span:nth-child(3){top:13px;}
+
+    .brand{
+      display:flex;align-items:center;gap:10px;
+      min-width:0;
+    }
+    .brand-mark{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      position:relative;
+      overflow:hidden;
+      border:1px solid rgba(255,213,79,.22);
+      box-shadow:0 10px 25px rgba(247,166,0,.18);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,213,79,.95), rgba(247,166,0,.9) 50%, rgba(247,166,0,.35) 100%),
+        linear-gradient(135deg, rgba(247,166,0,.9), rgba(255,213,79,.8));
+      flex:0 0 auto;
+    }
+    .brand-mark::before{
+      content:"";
+      position:absolute;
+      inset:9px;
+      border-radius:8px;
+      background:
+        linear-gradient(135deg,
+          transparent 0%,
+          transparent 42%,
+          rgba(255,255,255,.85) 42%,
+          rgba(255,255,255,.85) 48%,
+          transparent 48%,
+          transparent 100%);
+      opacity:.32;
+      transform:skewX(-12deg);
+    }
+    .brand-mark::after{
+      content:"";
+      position:absolute;
+      inset:-20%;
+      background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,.35) 45%, transparent 60%);
+      transform:rotate(18deg);
+    }
+    .brand-text{
+      font-weight:800;
+      letter-spacing:.6px;
+      font-size:16px;
+      line-height:1.05;
+      color:#F7A600;
+      text-transform:uppercase;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .brand-sub{
+      display:block;
+      font-size:9px;
+      letter-spacing:1.6px;
+      color:#9CA3AF;
+      margin-top:2px;
+    }
+
+    .right-actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      min-width:0;
+    }
+    .btn{
+      padding:10px 16px;border-radius:12px;border:1px solid #1f2937;
+      background:#121826;color:#EAECEF;cursor:pointer;font-weight:600;
+      transition: all .15s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{border-color:#F7A600;transform:translateY(-1px)}
+    .btn-primary{
+      background:linear-gradient(135deg,#F7A600,#FFD54F);
+      color:#0B0E11;border:none;
+    }
+    .btn-primary:hover{box-shadow:0 14px 30px rgba(247,166,0,.25)}
+    .btn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
+      border-color:#1f2937;
+      box-shadow:none;
+    }
+
+    /* Layout */
+    .wrap{
+      display:grid;
+      grid-template-columns:270px 1fr;
+      min-height:calc(100vh - 64px);
+    }
+
+    .sidebar{
+      border-right:1px solid #1f2937;
+      background:#0F141B;
+      padding:16px;
+    }
+
+    .nav-title{color:#9CA3AF;font-size:12px;text-transform:uppercase;margin:12px 10px;}
+    .nav a{
+      display:flex;align-items:center;gap:10px;
+      padding:12px 12px;border-radius:14px;
+      color:#EAECEF;
+      border:1px solid transparent;
+    }
+    .nav a:hover{background:rgba(247,166,0,.06);border-color:rgba(247,166,0,.25)}
+    .nav a.active{background:rgba(247,166,0,.1);border-color:rgba(247,166,0,.35)}
+
+    .content{padding:18px 18px 40px 18px; min-width:0;}
+
+    /* Tickers */
+    .tickers{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(170px, 1fr));
+      gap:12px;
+      margin-bottom:14px;
+    }
+    .card{
+      background:rgba(18,24,38,0.9);
+      border:1px solid #1f2937;
+      border-radius:18px;
+      padding:14px;
+      box-shadow:0 10px 35px rgba(0,0,0,.55);
+      min-width:0;
+    }
+    .ticker-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:10px;}
+    .pair{font-size:13px;color:#9CA3AF}
+    .tag{
+      font-size:12px;padding:4px 10px;border-radius:999px;
+      background:#0B0E11;border:1px solid #1f2937;color:#9CA3AF;
+      flex:0 0 auto;
+    }
+    .price{font-size:22px;font-weight:700;letter-spacing:.2px;}
+    .flash-green{animation:flashGreen .5s ease;}
+    .flash-red{animation:flashRed .5s ease;}
+    @keyframes flashGreen{0%{background:rgba(22,199,132,.18)}100%{background:transparent}}
+    @keyframes flashRed{0%{background:rgba(234,57,67,.18)}100%{background:transparent}}
+
+    /* Main panels */
+    .grid{
+      display:grid;
+      grid-template-columns: 1.35fr .65fr;
+      gap:12px;
+      margin-top:12px;
+      min-width:0;
+    }
+    .panel-title{
+      font-size:14px;color:#9CA3AF;margin-bottom:10px;
+      display:flex;justify-content:space-between;align-items:center;
+      gap:10px;
+    }
+    .panel-title span{color:#F7A600;font-weight:700}
+
+    /* Tables */
+    .table-wrap{
+      width:100%;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+    table{width:100%;border-collapse:collapse;margin-top:6px; min-width:560px;}
+    th{color:#9CA3AF;font-size:12px;text-transform:uppercase;text-align:left;padding:10px;border-bottom:1px solid #1f2937}
+    td{padding:12px 10px;border-bottom:1px solid #1f2937}
+    tbody tr:hover{background:rgba(247,166,0,.05)}
+    td img{width:20px;vertical-align:middle;margin-right:8px}
+
+    /* ✅ added: clickable headers + active row without changing colors */
+    th.sortable{cursor:pointer; user-select:none;}
+    th.sortable:hover{color:#EAECEF}
+    .sort-ind{margin-left:6px; color:#9CA3AF; font-size:11px;}
+    tr.market-active{background:rgba(247,166,0,.10)}
+    tr.market-active:hover{background:rgba(247,166,0,.10)}
+
+    /* Sections */
+    .section{display:none;}
+    .section.active{display:block;}
+
+    /* Assets summary */
+    .assets-top{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      margin-bottom:12px;
+    }
+    .big{font-size:26px;font-weight:800;margin-top:6px;}
+    .muted{color:#9CA3AF;font-size:12px}
+
+    /* Deposit */
+    .deposit-grid{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:flex-start;
+    }
+    .deposit-left{flex:1; min-width:260px;}
+    .deposit-right{width:240px;}
+    .input{
+      width:100%;
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid #1f2937;
+      background:#121826;
+      color:#EAECEF;
+      font-weight:600;
+      outline:none;
+    }
+    .input:focus{border-color:rgba(247,166,0,.55)}
+    .row{display:flex;gap:10px;margin-top:8px; flex-wrap:wrap;}
+    .row .input{flex:1; min-width:180px}
+
+    /* Deposit info boxes */
+    .notice{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid rgba(247,166,0,.25);
+      background:rgba(247,166,0,.06);
+      color:#FDE68A;
+      font-size:13px;
+      line-height:1.4;
+    }
+    .notice strong{color:#FFD54F}
+    .info-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    .mini{
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid #1f2937;
+      background:rgba(18,24,38,0.75);
+    }
+    .mini .k{color:#9CA3AF;font-size:12px}
+    .mini .v{margin-top:6px;font-weight:800;font-size:14px}
+    .check{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid #1f2937;
+      background:rgba(18,24,38,0.75);
+    }
+    .check input{margin-top:3px; accent-color:#F7A600;}
+    .check label{font-size:13px; color:#EAECEF; line-height:1.35;}
+    .check small{display:block;color:#9CA3AF;margin-top:6px}
+
+    /* Status pill */
+    .pill{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid #1f2937;
+      background:#0B0E11;
+      color:#9CA3AF;
+      white-space:nowrap;
+    }
+    .pill.pending{border-color:rgba(247,166,0,.35);color:#FDE68A;background:rgba(247,166,0,.08)}
+    .pill.confirmed{border-color:rgba(22,199,132,.35);color:#A7F3D0;background:rgba(22,199,132,.08)}
+    .pill.failed{border-color:rgba(234,57,67,.35);color:#FCA5A5;background:rgba(234,57,67,.08)}
+
+    /* Admin UI */
+    .admin-grid{
+      display:grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap:12px;
+      margin-top:10px;
+      min-width:0;
+    }
+    .admin-form .row{margin-top:10px}
+    .admin-form .row > *{flex:1}
+    .hint{
+      margin-top:10px;
+      color:#9CA3AF;
+      font-size:12px;
+      line-height:1.45;
+    }
+    .toast{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid #1f2937;
+      background:rgba(18,24,38,.7);
+      color:#EAECEF;
+      font-size:13px;
+    }
+    .toast.ok{border-color:rgba(22,199,132,.35);background:rgba(22,199,132,.08)}
+    .toast.err{border-color:rgba(234,57,67,.35);background:rgba(234,57,67,.08)}
+
+    /* ✅ Mobile sidebar drawer + backdrop */
+    .backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.55);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .2s ease;
+      z-index:70;
+    }
+    .backdrop.active{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    @media(max-width:1100px){
+      .wrap{grid-template-columns:1fr}
+
+      /* show hamburger */
+      .menu-btn{display:inline-flex;}
+
+      /* sidebar becomes drawer instead of disappearing */
+      .sidebar{
+        display:block;
+        position:fixed;
+        top:64px;
+        left:0;
+        height:calc(100vh - 64px);
+        width:270px;
+        z-index:80;
+        transform: translateX(-110%);
+        transition: transform .22s ease;
+        box-shadow: 18px 0 60px rgba(0,0,0,.55);
+      }
+      .sidebar.open{ transform: translateX(0); }
+
+      .content{padding:18px 18px 40px 18px;}
+
+      .tickers{grid-template-columns:repeat(2,1fr)}
+      .grid{grid-template-columns:1fr}
+      .assets-top{grid-template-columns:1fr}
+      .deposit-right{width:220px}
+      .info-grid{grid-template-columns:1fr}
+      .admin-grid{grid-template-columns:1fr}
+
+      table{min-width:620px;}
+    }
+
+    @media(max-width:560px){
+      .topbar{padding:0 14px;}
+      .btn{padding:9px 12px;}
+      .price{font-size:20px;}
+      .tickers{grid-template-columns:1fr}
+      table{min-width:640px;}
+    }
+
+    @media(max-width:420px){
+      .btn{font-size:12px;}
+      .brand-mark{width:32px;height:32px;border-radius:10px;}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <!-- ✅ mobile menu -->
+    <button class="menu-btn" id="menuBtn" type="button" aria-label="Open menu">
+      <div class="menu-icon" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+    </button>
+
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div>
+        <div class="brand-text">Kinetix Exchange</div>
+        <span class="brand-sub">TRADING</span>
+      </div>
+    </div>
+
+    <div class="right-actions">
+      <div class="btn" style="cursor:default;">
+        Welcome, <b>{{ username }}</b>
+      </div>
+      {% if username|lower == "admin" %}
+        <button class="btn btn-primary" onclick="location.href='/logout'">Logout</button>
+      {% else %}
+        <button class="btn btn-primary" onclick="if(confirm('Are you sure you want to logout?')){location.href='/logout'}">Logout</button>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ✅ backdrop for drawer -->
+  <div class="backdrop" id="backdrop"></div>
+
+  <div class="wrap">
+    <aside class="sidebar" id="sidebar">
+      <div class="nav-title">Account</div>
+      <div class="nav">
+        <a class="active" href="#" data-tab="dashboardTab">Dashboard</a>
+        <a href="#" data-tab="assetsTab">Assets</a>
+        <a href="#" data-tab="depositTab">Deposit</a>
+        <a href="#" data-tab="withdrawTab">Withdraw</a>
+        <a href="#" data-tab="ordersTab">Orders</a>
+        <a href="#" data-tab="historyTab">History</a>
+
+        {% if username|lower == "admin" %}
+          <a href="#" data-tab="adminTab">Admin</a>
+        {% endif %}
+      </div>
+
+      <!-- ✅ REMOVED: Quick Trade Market Buy/Sell block (per your request) -->
+    </aside>
+
+    <main class="content">
+
+      <!-- ================== DASHBOARD ================== -->
+      <section id="dashboardTab" class="section active">
+
+        <section class="tickers">
+          <div class="card" id="card-btc" style="cursor:pointer">
+            <div class="ticker-top"><div class="pair">BTC/USDT</div><div class="tag">Live</div></div>
+            <div class="price" id="px-btc">$0</div>
+            <div class="muted" id="chg-btc">—</div>
+          </div>
+          <div class="card" id="card-eth" style="cursor:pointer">
+            <div class="ticker-top"><div class="pair">ETH/USDT</div><div class="tag">Live</div></div>
+            <div class="price" id="px-eth">$0</div>
+            <div class="muted" id="chg-eth">—</div>
+          </div>
+          <div class="card" id="card-sol" style="cursor:pointer">
+            <div class="ticker-top"><div class="pair">SOL/USDT</div><div class="tag">Live</div></div>
+            <div class="price" id="px-sol">$0</div>
+            <div class="muted" id="chg-sol">—</div>
+          </div>
+          <div class="card" id="card-xrp" style="cursor:pointer">
+            <div class="ticker-top"><div class="pair">XRP/USDT</div><div class="tag">Live</div></div>
+            <div class="price" id="px-xrp">$0</div>
+            <div class="muted" id="chg-xrp">—</div>
+          </div>
+        </section>
+
+        <section class="grid">
+          <div class="card">
+            <div class="panel-title">
+              Chart
+              <span>
+                <select id="chartPair" class="input" style="padding:6px 10px;">
+                  <option value="BINANCE:BTCUSDT">BTC/USDT</option>
+                  <option value="BINANCE:ETHUSDT">ETH/USDT</option>
+                  <option value="BINANCE:SOLUSDT">SOL/USDT</option>
+                  <option value="BINANCE:XRPUSDT">XRP/USDT</option>
+                  <option value="BINANCE:BNBUSDT">BNB/USDT</option>
+                </select>
+              </span>
+            </div>
+
+            <div style="height:420px;">
+              <div id="tv_chart" style="height:100%;"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="panel-title">Top Markets <span>Spot</span></div>
+
+            <div class="muted" style="margin-top:-2px">
+              Click a market to load it on the chart. Click headers to sort.
+            </div>
+
+            <div class="table-wrap">
+              <table id="marketTable">
+                <thead>
+                  <tr>
+                    <th>Asset</th>
+                    <th class="sortable" data-sort="price">Price <span class="sort-ind" id="ind-price"></span></th>
+                    <th>High</th>
+                    <th>Low</th>
+                    <th class="sortable" data-sort="change">Change <span class="sort-ind" id="ind-change"></span></th>
+                    <th class="sortable" data-sort="volume">Volume <span class="sort-ind" id="ind-volume"></span></th>
+                  </tr>
+                </thead>
+                <tbody><tr><td colspan="6">Loading...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- ================== ASSETS ================== -->
+      <section id="assetsTab" class="section">
+        <div class="assets-top">
+          <div class="card">
+            <div class="panel-title">Total Assets <span>USD</span></div>
+            <div class="big" id="totalAssets">$0</div>
+            <div class="muted">Sum of your portfolio value</div>
+          </div>
+          <div class="card">
+            <div class="panel-title">Available Balance <span>USD</span></div>
+            <div class="big" id="availableBalance">$0</div>
+            <div class="muted">Cash/USDT available</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="panel-title">Portfolio Breakdown <span>Assets</span></div>
+          <div class="table-wrap">
+            <table id="assetsTable">
+              <thead>
+                <tr><th>Coin</th><th>Amount</th><th>Value (USD)</th></tr>
+              </thead>
+              <tbody><tr><td colspan="3">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== DEPOSIT ================== -->
+      <section id="depositTab" class="section">
+        <div class="card">
+          <div class="panel-title">Deposit <span>Address</span></div>
+
+          <div class="deposit-grid">
+            <div class="deposit-left">
+              <div class="muted">Coin</div>
+              <select id="depCoin" class="input" style="margin-top:6px;">
+                <option value="USDT" selected>USDT</option>
+                <option value="USDC">USDC</option>
+                <option value="BTC">BTC</option>
+                <option value="ETH">ETH</option>
+                <option value="BNB">BNB</option>
+                <option value="SOL">SOL</option>
+                <option value="XRP">XRP</option>
+                <option value="TRX">TRX</option>
+                <option value="LTC">LTC</option>
+                <option value="DOGE">DOGE</option>
+              </select>
+
+              <div style="height:10px"></div>
+
+              <div class="muted">Network</div>
+              <select id="depNetwork" class="input" style="margin-top:6px;">
+                <!-- will be populated by JS -->
+              </select>
+
+              <div class="notice" id="networkWarning">
+                ⚠️ Select a coin and network to see deposit warnings.
+              </div>
+
+              <div class="info-grid">
+                <div class="mini">
+                  <div class="k">Minimum Deposit</div>
+                  <div class="v" id="minDeposit">—</div>
+                </div>
+                <div class="mini">
+                  <div class="k">Confirmations Required</div>
+                  <div class="v" id="confirmations">—</div>
+                </div>
+              </div>
+
+              <div class="mini" style="margin-top:10px;">
+                <div class="k">Deposit Credit</div>
+                <div class="v" id="creditInfo">Credits after required confirmations.</div>
+                <div class="muted" style="margin-top:6px">
+                  Until confirmations complete, a deposit can show as <span class="pill pending">Pending</span>.
+                  After confirmations, it becomes <span class="pill confirmed">Confirmed</span>.
+                </div>
+              </div>
+
+              <div class="check">
+                <input type="checkbox" id="riskAck" />
+                <div>
+                  <label for="riskAck">
+                    I understand that sending assets to the wrong address or network may result in permanent loss.
+                  </label>
+                  <small>
+                    Always confirm coin + network match exactly before you send.
+                  </small>
+                </div>
+              </div>
+
+              <div style="height:14px"></div>
+
+              <div class="muted">Deposit Address</div>
+              <div class="row">
+                <input id="depAddress" class="input" readonly value="Check the box to reveal address" />
+                <button class="btn btn-primary" id="copyDepBtn" type="button" disabled>Copy</button>
+              </div>
+
+              <div style="height:10px"></div>
+              <div class="muted" id="depNote">
+                You must accept the risk warning before the address is shown.
+              </div>
+            </div>
+
+            <div class="deposit-right">
+              <div class="muted">QR Code</div>
+              <div style="height:10px"></div>
+              <canvas id="depQR" width="220" height="220" style="background:#fff;border-radius:16px;"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== WITHDRAW ================== -->
+      <section id="withdrawTab" class="section">
+        <div class="card">
+          <div class="panel-title">Withdraw <span>Send</span></div>
+
+          <div class="deposit-grid">
+            <div class="deposit-left">
+              <div class="muted">Coin</div>
+              <select id="wdCoin" class="input" style="margin-top:6px;">
+                <option value="USDT" selected>USDT</option>
+                <option value="USDC">USDC</option>
+                <option value="BTC">BTC</option>
+                <option value="ETH">ETH</option>
+                <option value="BNB">BNB</option>
+                <option value="SOL">SOL</option>
+                <option value="XRP">XRP</option>
+                <option value="TRX">TRX</option>
+                <option value="LTC">LTC</option>
+                <option value="DOGE">DOGE</option>
+              </select>
+
+              <div style="height:10px"></div>
+
+              <div class="muted">Network</div>
+              <select id="wdNetwork" class="input" style="margin-top:6px;">
+                <!-- will be populated by JS -->
+              </select>
+
+              <div class="notice">
+                Please double-check address + network. Withdrawals sent to the wrong chain cannot be recovered.
+              </div>
+
+              <div class="muted" style="margin-top:10px;">Recipient Address</div>
+              <input id="wdAddress" class="input" placeholder="Paste destination wallet address" style="margin-top:6px;" />
+
+              <div class="row">
+                <input id="wdAmount" class="input" placeholder="Amount" />
+                <button class="btn" type="button">Max</button>
+              </div>
+
+              <div class="mini" style="margin-top:10px;">
+                <div class="k">Estimated Fee</div>
+                <div class="v" id="wdFee">0.00</div>
+                <div class="muted" style="margin-top:6px">
+                  Fees vary by network and congestion.
+                </div>
+              </div>
+
+              <div class="check">
+                <input type="checkbox" id="wdAck" />
+                <div>
+                  <label for="wdAck">
+                    I confirm the address and network are correct.
+                  </label>
+                  <small>
+                    Withdrawals are irreversible once broadcast.
+                  </small>
+                </div>
+              </div>
+
+              <div style="height:12px"></div>
+              <button class="btn btn-primary" id="wdSubmitBtn" type="button" disabled>Withdraw</button>
+              <div class="toast" id="wdToast" style="display:none;"></div>
+            </div>
+
+            <div class="deposit-right">
+              <div class="muted">Limits</div>
+              <div style="height:10px"></div>
+              <div class="mini">
+                <div class="k">Minimum</div>
+                <div class="v" id="wdMin">0.00</div>
+              </div>
+              <div style="height:10px"></div>
+              <div class="mini">
+                <div class="k">Available</div>
+                <div class="v" id="wdAvail">0.00</div>
+              </div>
+              <div style="height:10px"></div>
+              <div class="mini">
+                <div class="k">Processing Time</div>
+                <div class="v" id="wdTime">~5-30 min</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== ORDERS ================== -->
+      <section id="ordersTab" class="section">
+        <div class="card">
+          <div class="panel-title">Orders <span>Open/Closed</span></div>
+          <div class="table-wrap">
+            <table id="ordersTable">
+              <thead>
+                <tr><th>Pair</th><th>Side</th><th>Qty</th><th>Price</th><th>Status</th><th>Time</th></tr>
+              </thead>
+              <tbody><tr><td colspan="6">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== HISTORY ================== -->
+      <section id="historyTab" class="section">
+        <div class="card">
+          <div class="panel-title">Transaction History</div>
+
+          <div class="table-wrap">
+            <table id="historyTable">
+              <thead>
+                <tr><th>Type</th><th>Asset</th><th>Amount</th><th>Status</th><th>Time</th></tr>
+              </thead>
+              <tbody><tr><td colspan="5">Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================== ADMIN (upgrade) ================== -->
+      {% if username|lower == "admin" %}
+      <section id="adminTab" class="section">
+        <div class="card">
+          <div class="panel-title">Admin <span>Manage Users & Balances</span></div>
+          <div class="muted">
+            Pick a user, view balances, then Set/Adjust without typing usernames.
+          </div>
+
+          <div class="admin-grid">
+            <div class="card" style="box-shadow:none;">
+              <div class="panel-title">Select User <span>List</span></div>
+
+              <select id="adminUserSelect" class="input" style="margin-top:6px;">
+                <option value="">Loading users...</option>
+              </select>
+
+              <div style="height:10px"></div>
+              <div class="muted">Email</div>
+              <div id="adminUserEmail" class="input" style="margin-top:6px;cursor:default;background:#0F141B;">Select a user</div>
+
+              <div style="height:10px"></div>
+              <div class="muted">Email Subject</div>
+              <input id="adminEmailSubject" class="input" placeholder="Subject" style="margin-top:6px;" />
+
+              <div style="height:10px"></div>
+              <div class="muted">Message</div>
+              <textarea id="adminEmailBody" class="input" placeholder="Write a short message..." style="margin-top:6px;height:90px;resize:vertical;"></textarea>
+
+              <div style="height:10px"></div>
+              <button id="adminEmailBtn" class="btn" type="button" disabled>Email User</button>
+
+              <div class="panel-title">User Balances <span>Assets</span></div>
+              <div class="table-wrap">
+                <table id="adminBalancesTable">
+                  <thead>
+                    <tr><th>Coin</th><th>Amount</th></tr>
+                  </thead>
+                  <tbody><tr><td colspan="2">Select a user</td></tr></tbody>
+                </table>
+              </div>
+
+              <div class="hint">
+                Needs backend endpoints:
+                <b>/api/admin/users</b> and <b>/api/admin/user_assets?username=...</b>.
+                If you don’t have them yet, tell me and I’ll paste them for your app.py.
+              </div>
+            </div>
+
+            <div class="card admin-form" style="box-shadow:none;">
+              <div class="panel-title">Edit Balance <span>Set / Adjust</span></div>
+
+              <div class="row">
+                <select id="adminCoin" class="input">
+                  <option>USDT</option><option>USDC</option><option>BTC</option><option>ETH</option>
+                  <option>BNB</option><option>SOL</option><option>XRP</option><option>TRX</option>
+                  <option>LTC</option><option>DOGE</option>
+                </select>
+
+                <select id="adminMode" class="input">
+                  <option value="set">Set (overwrite)</option>
+                  <option value="adjust">Adjust (+/-)</option>
+                </select>
+              </div>
+
+              <div class="row">
+                <input id="adminAmount" class="input" type="number" step="any" placeholder="Amount (e.g. 5000 or -200)" />
+                <button id="adminApplyBtn" class="btn btn-primary" type="button">Apply</button>
+              </div>
+
+              <div class="toast" id="adminToast" style="display:none;"></div>
+
+              <div class="hint">
+                After applying, we refresh:
+                user balances, Assets tab, and History tab.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      {% endif %}
+
+    </main>
+  </div>
+
+  <!-- Socket.IO + QR + TradingView -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <script src="https://s3.tradingview.com/tv.js"></script>
+
+  <script>
+    const socket = io();
+    const IS_ADMIN = "{{ username|lower }}" === "admin";
+
+    // ✅ Mobile drawer controls
+    const sidebarEl = document.getElementById("sidebar");
+    const backdropEl = document.getElementById("backdrop");
+    const menuBtn = document.getElementById("menuBtn");
+
+    function openDrawer(){
+      if(!sidebarEl) return;
+      sidebarEl.classList.add("open");
+      backdropEl.classList.add("active");
+    }
+    function closeDrawer(){
+      if(!sidebarEl) return;
+      sidebarEl.classList.remove("open");
+      backdropEl.classList.remove("active");
+    }
+    if(menuBtn){
+      menuBtn.addEventListener("click", () => {
+        if(sidebarEl.classList.contains("open")) closeDrawer();
+        else openDrawer();
+      });
+    }
+    if(backdropEl){
+      backdropEl.addEventListener("click", closeDrawer);
+    }
+
+    // ---------------- TAB SWITCHING ----------------
+    const navLinks = document.querySelectorAll(".nav a");
+    const sections = document.querySelectorAll(".section");
+
+    navLinks.forEach(link=>{
+      link.addEventListener("click",(e)=>{
+        e.preventDefault();
+        navLinks.forEach(l=>l.classList.remove("active"));
+        link.classList.add("active");
+
+        const tab = link.getAttribute("data-tab");
+        sections.forEach(s=>s.classList.remove("active"));
+        document.getElementById(tab).classList.add("active");
+
+        closeDrawer();
+
+        if(tab === "assetsTab") loadAssets();
+        if(tab === "ordersTab") loadOrders();
+        if(tab === "historyTab"){ loadHistory(); }
+        if(tab === "depositTab"){ refreshDepositUI(true); }
+        if(tab === "adminTab" && IS_ADMIN){ adminInit(); }
+      });
+    });
+
+    // ---------------- Helpers ----------------
+    function fmt(n){
+      return "$" + (Number(n) || 0).toLocaleString(undefined, {maximumFractionDigits: 2});
+    }
+    function fmtPct(n){
+      const v = Number(n);
+      if(!isFinite(v)) return "—";
+      const sign = v > 0 ? "+" : "";
+      return sign + v.toFixed(2) + "%";
+    }
+    function fmtVol(n){
+      const v = Number(n);
+      if(!isFinite(v) || v === 0) return "—";
+      return v.toLocaleString(undefined, {maximumFractionDigits: 0});
+    }
+    function flash(cardEl, isUp){
+      if(!cardEl) return;
+      cardEl.classList.remove("flash-green", "flash-red");
+      void cardEl.offsetWidth;
+      cardEl.classList.add(isUp ? "flash-green" : "flash-red");
+    }
+    function safeText(v, fallback="—"){
+      if(v === null || v === undefined) return fallback;
+      const s = String(v);
+      return s.length ? s : fallback;
+    }
+    function toLocalTime(ts){
+      if(!ts) return "—";
+      if(typeof ts === "number"){
+        const ms = ts < 2_000_000_000 ? ts * 1000 : ts;
+        return new Date(ms).toLocaleString();
+      }
+      if(typeof ts === "string"){
+        const d = new Date(ts);
+        if(!isNaN(d.getTime())) return d.toLocaleString();
+        return ts;
+      }
+      return "—";
+    }
+    function statusPill(status){
+      const s = (status || "").toLowerCase();
+      if(s.includes("confirm")) return `<span class="pill confirmed">Confirmed</span>`;
+      if(s.includes("pend")) return `<span class="pill pending">Pending</span>`;
+      if(s.includes("fail") || s.includes("error")) return `<span class="pill failed">Failed</span>`;
+      return `<span class="pill">${safeText(status,"—")}</span>`;
+    }
+
+    // ✅ NEW: normalize admin-set/adjust types to "Deposit"
+    function normalizeTxType(t){
+      const raw = String(t?.type ?? t?.tx_type ?? t?.kind ?? "").trim();
+      const up = raw.toUpperCase();
+
+      // if backend labels admin actions like "ADMIN_SET", "admin set", "set_asset", etc -> show as Deposit
+      if(
+        up.includes("ADMIN") ||
+        up.includes("SET") ||
+        up.includes("ADJUST") ||
+        up.includes("BALANCE") ||
+        up.includes("CREDIT")
+      ){
+        return "Deposit";
+      }
+
+      // fallback
+      return raw ? raw : "Deposit";
+    }
+
+    // ---------------- TICKERS ----------------
+    const els = {
+      btc: document.getElementById("px-btc"),
+      eth: document.getElementById("px-eth"),
+      sol: document.getElementById("px-sol"),
+      xrp: document.getElementById("px-xrp"),
+      chg_btc: document.getElementById("chg-btc"),
+      chg_eth: document.getElementById("chg-eth"),
+      chg_sol: document.getElementById("chg-sol"),
+      chg_xrp: document.getElementById("chg-xrp"),
+      card_btc: document.getElementById("card-btc"),
+      card_eth: document.getElementById("card-eth"),
+      card_sol: document.getElementById("card-sol"),
+      card_xrp: document.getElementById("card-xrp"),
+    };
+    let last = { BTC: null, ETH: null, SOL: null, XRP: null };
+
+    // Click ticker cards -> set chart
+    const TICKER_TO_TV = {
+      "BTC": "BINANCE:BTCUSDT",
+      "ETH": "BINANCE:ETHUSDT",
+      "SOL": "BINANCE:SOLUSDT",
+      "XRP": "BINANCE:XRPUSDT"
+    };
+    if(els.card_btc) els.card_btc.addEventListener("click", ()=> setChartPair(TICKER_TO_TV.BTC, "BTC/USDT"));
+    if(els.card_eth) els.card_eth.addEventListener("click", ()=> setChartPair(TICKER_TO_TV.ETH, "ETH/USDT"));
+    if(els.card_sol) els.card_sol.addEventListener("click", ()=> setChartPair(TICKER_TO_TV.SOL, "SOL/USDT"));
+    if(els.card_xrp) els.card_xrp.addEventListener("click", ()=> setChartPair(TICKER_TO_TV.XRP, "XRP/USDT"));
+
+    // Update tickers; also show % change if backend sends it (optional)
+    socket.on("ticker_update", (d) => {
+      if(d && typeof d === "object"){
+        if(last.BTC !== null && d.BTC !== last.BTC) flash(els.card_btc, d.BTC > last.BTC);
+        if(isFinite(Number(d.BTC))) els.btc.textContent = fmt(d.BTC);
+        last.BTC = d.BTC;
+
+        if(last.ETH !== null && d.ETH !== last.ETH) flash(els.card_eth, d.ETH > last.ETH);
+        if(isFinite(Number(d.ETH))) els.eth.textContent = fmt(d.ETH);
+        last.ETH = d.ETH;
+
+        if(last.SOL !== null && d.SOL !== last.SOL) flash(els.card_sol, d.SOL > last.SOL);
+        if(isFinite(Number(d.SOL))) els.sol.textContent = fmt(d.SOL);
+        last.SOL = d.SOL;
+
+        if(last.XRP !== null && d.XRP !== last.XRP) flash(els.card_xrp, d.XRP > last.XRP);
+        if(isFinite(Number(d.XRP))) els.xrp.textContent = fmt(d.XRP);
+        last.XRP = d.XRP;
+
+        // optional change fields if your backend ever adds them
+        if(els.chg_btc) els.chg_btc.textContent = d.BTC_CHG !== undefined ? fmtPct(d.BTC_CHG) : els.chg_btc.textContent;
+        if(els.chg_eth) els.chg_eth.textContent = d.ETH_CHG !== undefined ? fmtPct(d.ETH_CHG) : els.chg_eth.textContent;
+        if(els.chg_sol) els.chg_sol.textContent = d.SOL_CHG !== undefined ? fmtPct(d.SOL_CHG) : els.chg_sol.textContent;
+        if(els.chg_xrp) els.chg_xrp.textContent = d.XRP_CHG !== undefined ? fmtPct(d.XRP_CHG) : els.chg_xrp.textContent;
+      }
+    });
+
+    // ---------------- TradingView Chart ----------------
+    let tvWidget = null;
+
+    function loadChart(symbol){
+      if(tvWidget){
+        try{ tvWidget.remove(); }catch(e){}
+      }
+
+      tvWidget = new TradingView.widget({
+        autosize: true,
+        symbol: symbol,
+        interval: "15",
+        timezone: "Etc/UTC",
+        theme: "dark",
+        style: "1",
+        locale: "en",
+        toolbar_bg: "#0B0E11",
+        enable_publishing: false,
+        allow_symbol_change: false,
+        container_id: "tv_chart",
+        hide_top_toolbar: false,
+        hide_legend: false,
+        save_image: false,
+        studies: [],
+        disabled_features: ["use_localstorage_for_settings"],
+        enabled_features: ["study_templates"]
+      });
+    }
+
+    function setChartPair(tvSymbol, labelText){
+      const sel = document.getElementById("chartPair");
+      if(sel) sel.value = tvSymbol;
+
+      // highlight active market row if present
+      setActiveMarketRow(tvSymbol);
+
+      // remember
+      try{ localStorage.setItem("tv_symbol", tvSymbol); }catch(e){}
+
+      loadChart(tvSymbol);
+    }
+
+    document.getElementById("chartPair").addEventListener("change", (e)=>{
+      const sym = e.target.value;
+      const label = sym.split(":")[1] ? sym.split(":")[1].replace("USDT","/USDT") : "—";
+      setChartPair(sym, label);
+    });
+
+    // load default from storage or BTC
+    (function bootChart(){
+      let sym = "BINANCE:BTCUSDT";
+      try{
+        sym = localStorage.getItem("tv_symbol") || sym;
+      }catch(e){}
+      const sel = document.getElementById("chartPair");
+      if(sel) sel.value = sym;
+      loadChart(sym);
+      setActiveMarketRow(sym);
+    })();
+
+    // ---------------- Dashboard Markets (interactive + sortable) ----------------
+    let marketRows = [];
+    let sortState = { key: "volume", dir: "desc" }; // default sort by volume like exchanges
+
+    function setSortIndicators(){
+      const ids = ["price","change","volume"];
+      ids.forEach(k=>{
+        const el = document.getElementById("ind-"+k);
+        if(!el) return;
+        if(sortState.key !== k){ el.textContent = ""; return; }
+        el.textContent = sortState.dir === "asc" ? "▲" : "▼";
+      });
+    }
+
+    function numOrNull(v){
+      const n = Number(v);
+      return isFinite(n) ? n : null;
+    }
+
+    function normalizeMarket(c){
+      const price = numOrNull(c.current_price ?? c.price ?? c.last ?? c.last_price);
+      const high  = numOrNull(c.high_24h ?? c.high);
+      const low   = numOrNull(c.low_24h ?? c.low);
+      const chg   = numOrNull(
+        c.price_change_percentage_24h ??
+        c.change_24h ??
+        c.change_pct ??
+        c.price_change_percentage_24h_in_currency
+      );
+      const vol   = numOrNull(
+        c.total_volume ??
+        c.volume ??
+        c.quote_volume ??
+        c.volume_24h ??
+        c.volume_24h_quote
+      );
+
+      const symbol = (c.symbol || c.ticker || c.asset || "").toString().toUpperCase();
+      const img = c.image || c.icon || "";
+      const TV_SYMBOL_MAP = {
+        "BTC": "BINANCE:BTCUSDT",
+        "ETH": "BINANCE:ETHUSDT",
+        "SOL": "BINANCE:SOLUSDT",
+        "XRP": "BINANCE:XRPUSDT",
+        "BNB": "BINANCE:BNBUSDT",
+        "ADA": "BINANCE:ADAUSDT",
+        "DOGE": "BINANCE:DOGEUSDT",
+        "TRX": "BINANCE:TRXUSDT",
+        "LTC": "BINANCE:LTCUSDT",
+        "DOT": "BINANCE:DOTUSDT",
+        "MATIC": "BINANCE:MATICUSDT",
+        "AVAX": "BINANCE:AVAXUSDT",
+        "LINK": "BINANCE:LINKUSDT",
+        "SHIB": "BINANCE:SHIBUSDT"
+      };
+      const tv = TV_SYMBOL_MAP[symbol] || "";
+
+      return { symbol, img, price, high, low, chg, vol, tv };
+    }
+
+    function renderMarkets(){
+      const tbody = document.querySelector("#marketTable tbody");
+      if(!tbody) return;
+
+      const key = sortState.key;
+      const dir = sortState.dir === "asc" ? 1 : -1;
+
+      const sorted = marketRows.slice().sort((a,b)=>{
+        const av = a[key]; const bv = b[key];
+        if(av === null && bv === null) return 0;
+        if(av === null) return 1;
+        if(bv === null) return -1;
+        return (av - bv) * dir;
+      });
+
+      tbody.innerHTML = "";
+      sorted.forEach(r=>{
+        const tr = document.createElement("tr");
+        tr.dataset.tv = r.tv;
+
+        tr.innerHTML = `
+          <td>${r.img ? `<img src="${r.img}">` : ""} ${safeText(r.symbol)}</td>
+          <td>${r.price === null ? "—" : fmt(r.price)}</td>
+          <td style="color:#16c784">${r.high === null ? "—" : fmt(r.high)}</td>
+          <td style="color:#ea3943">${r.low === null ? "—" : fmt(r.low)}</td>
+          <td>${r.chg === null ? "—" : fmtPct(r.chg)}</td>
+          <td>${r.vol === null ? "—" : fmtVol(r.vol)}</td>
+        `;
+
+        if(r.tv){
+          tr.addEventListener("click", ()=>{
+            const label = r.symbol + "/USDT";
+            setChartPair(r.tv, label);
+          });
+        }
+
+        tbody.appendChild(tr);
+      });
+
+      setSortIndicators();
+      setActiveMarketRow(document.getElementById("chartPair")?.value || "BINANCE:BTCUSDT");
+    }
+
+    function setActiveMarketRow(tvSymbol){
+      const tbody = document.querySelector("#marketTable tbody");
+      if(!tbody) return;
+      const rows = tbody.querySelectorAll("tr");
+      rows.forEach(tr=>{
+        if(tr.dataset.tv === tvSymbol) tr.classList.add("market-active");
+        else tr.classList.remove("market-active");
+      });
+    }
+
+    document.querySelectorAll("#marketTable th.sortable").forEach(th=>{
+      th.addEventListener("click", ()=>{
+        const key = th.dataset.sort;
+        if(!key) return;
+        if(sortState.key === key){
+          sortState.dir = (sortState.dir === "asc") ? "desc" : "asc";
+        } else {
+          sortState.key = key;
+          sortState.dir = "desc";
+        }
+        renderMarkets();
+        document.querySelectorAll("#marketTable th.sortable").forEach(h=>{
+          h.classList.remove("sort-asc","sort-desc");
+          if(h.dataset.sort === sortState.key){
+            h.classList.add(sortState.dir === "asc" ? "sort-asc" : "sort-desc");
+          }
+        });
+      });
+    });
+
+    // ✅ FIX: loadMarkets was missing (it was causing JS to crash, breaking deposit dropdown + min/conf UI)
+    async function loadMarkets(){
+      const tbody = document.querySelector("#marketTable tbody");
+      if(tbody) tbody.innerHTML = `<tr><td colspan="6">Loading...</td></tr>`;
+      try{
+        const res = await fetch("/api/markets");
+        if(!res.ok) throw new Error("markets fetch failed");
+        const data = await res.json();
+
+        const arr = Array.isArray(data) ? data : (data.markets || data.data || []);
+        marketRows = (arr || [])
+          .map(normalizeMarket)
+          .filter(x => x.symbol);
+
+        if(!marketRows.length){
+          const tbody2 = document.querySelector("#marketTable tbody");
+          if(tbody2) tbody2.innerHTML = `<tr><td colspan="6">No markets.</td></tr>`;
+          return;
+        }
+
+        renderMarkets();
+      }catch(e){
+        const tbody3 = document.querySelector("#marketTable tbody");
+        if(tbody3) tbody3.innerHTML = `<tr><td colspan="6">Failed to load.</td></tr>`;
+      }
+    }
+
+    // initial load
+    loadMarkets();
+    setInterval(loadMarkets, 15000);
+
+    // ================== ASSETS ==================
+    async function loadAssets(){
+      try{
+        const res = await fetch("/api/assets");
+        const data = await res.json();
+
+        document.getElementById("totalAssets").textContent = fmt(data.total_usd);
+        document.getElementById("availableBalance").textContent = fmt(data.available_usd);
+
+        window.__assetBalances = {};
+        const tbody = document.querySelector("#assetsTable tbody");
+        tbody.innerHTML = "";
+        (data.assets || []).forEach(a=>{
+          window.__assetBalances[String(a.coin || "").toUpperCase()] = a.amount;
+          tbody.innerHTML += `
+            <tr>
+              <td>${safeText(a.coin)}</td>
+              <td>${safeText(a.amount)}</td>
+              <td>${fmt(a.value_usd)}</td>
+            </tr>
+          `;
+        });
+        refreshWithdrawMeta();
+      }catch(e){}
+    }
+
+    // ================== ORDERS ==================
+    async function loadOrders(){
+      try{
+        const res = await fetch("/api/orders");
+        const orders = await res.json();
+
+        const tbody = document.querySelector("#ordersTable tbody");
+        tbody.innerHTML = "";
+        if(!orders || !orders.length){
+          tbody.innerHTML = `<tr><td colspan="6">No orders yet.</td></tr>`;
+          return;
+        }
+        (orders || []).forEach(o=>{
+          tbody.innerHTML += `
+            <tr>
+              <td>${safeText(o.pair)}</td>
+              <td style="color:${String(o.side).toUpperCase()==='BUY' ? '#16c784' : '#ea3943'}">${safeText(o.side)}</td>
+              <td>${safeText(o.qty)}</td>
+              <td>${fmt(o.price)}</td>
+              <td>${safeText(o.status)}</td>
+              <td>${safeText(o.time)}</td>
+            </tr>
+          `;
+        });
+      }catch(e){}
+    }
+
+    // ================== HISTORY (REAL) ==================
+    async function loadHistory(){
+      try{
+        const res = await fetch("/api/transactions");
+        const txs = await res.json();
+
+        const tbody = document.querySelector("#historyTable tbody");
+        tbody.innerHTML = "";
+
+        if(!txs || !txs.length){
+          tbody.innerHTML = `<tr><td colspan="5">No transactions yet.</td></tr>`;
+          return;
+        }
+
+        txs.slice().reverse().forEach(t=>{
+          // ✅ changed: show admin-set/adjust as "Deposit"
+          const type = normalizeTxType(t);
+          const asset = safeText(t.asset || t.coin, "—");
+          const amount = safeText(t.amount, "—");
+          const status = statusPill(t.status || t.state || "Confirmed");
+          const time = toLocalTime(t.ts || t.timestamp || t.time || t.created_at);
+
+          tbody.innerHTML += `
+            <tr>
+              <td>${type}</td>
+              <td>${asset}</td>
+              <td>${amount}</td>
+              <td>${status}</td>
+              <td>${time}</td>
+            </tr>
+          `;
+        });
+      }catch(e){
+        document.querySelector("#historyTable tbody").innerHTML = `<tr><td colspan="5">Failed to load.</td></tr>`;
+      }
+    }
+
+    // ================== DEPOSIT (unchanged logic, but will now work since JS no longer crashes) ==================
+    const NETWORK_MAP = {
+      "USDT": ["TRC20","ERC20","BEP20","POLYGON","ARBITRUM","OPTIMISM","SOL"],
+      "USDC": ["ERC20","BEP20","POLYGON","ARBITRUM","OPTIMISM","SOL"],
+      "BTC": ["BTC"],
+      "ETH": ["ETH","ARBITRUM","OPTIMISM"],
+      "BNB": ["BEP20"],
+      "SOL": ["SOL"],
+      "XRP": ["XRP"],
+      "TRX": ["TRC20"],
+      "LTC": ["LTC"],
+      "DOGE": ["DOGE"],
+    };
+
+    const DEPOSIT_POLICY = {
+      "USDT|TRC20": { min: "1 USDT", conf: "12", warn: "Only send USDT via TRC20 to this address. Sending via ERC20/BEP20 or other networks may result in loss." },
+      "USDT|ERC20": { min: "10 USDT", conf: "35", warn: "ERC20 deposits may take longer and have higher network fees. Send only USDT (ERC20) to this address." },
+      "USDT|BEP20": { min: "1 USDT", conf: "15", warn: "Send only USDT via BEP20 (BSC). Do not send via ERC20/TRC20 to this address." },
+      "USDT|POLYGON": { min: "1 USDT", conf: "128", warn: "Send only USDT via Polygon. Ensure your wallet supports Polygon network." },
+      "USDT|ARBITRUM": { min: "1 USDT", conf: "20", warn: "Send only USDT via Arbitrum. Do not send on Ethereum mainnet." },
+      "USDT|OPTIMISM": { min: "1 USDT", conf: "20", warn: "Send only USDT via Optimism. Do not send on Ethereum mainnet." },
+      "USDT|SOL": { min: "1 USDT", conf: "32", warn: "Send only USDT via Solana network. Sending on other networks may be lost." },
+
+      "USDC|ERC20": { min: "10 USDC", conf: "35", warn: "Send only USDC (ERC20) to this address. Other networks may not be recoverable." },
+      "USDC|BEP20": { min: "1 USDC", conf: "15", warn: "Send only USDC via BEP20 (BSC). Do not send via ERC20/TRC20." },
+      "USDC|POLYGON": { min: "1 USDC", conf: "128", warn: "Send only USDC via Polygon. Make sure your wallet is on Polygon network." },
+      "USDC|ARBITRUM": { min: "1 USDC", conf: "20", warn: "Send only USDC via Arbitrum. Do not send via ERC20." },
+      "USDC|OPTIMISM": { min: "1 USDC", conf: "20", warn: "Send only USDC via Optimism. Do not send via ERC20." },
+      "USDC|SOL": { min: "1 USDC", conf: "32", warn: "Send only USDC via Solana network." },
+
+      "BTC|BTC": { min: "0.0001 BTC", conf: "2", warn: "Send only BTC to this address. Do not send BTC on wrapped networks." },
+      "ETH|ETH": { min: "0.001 ETH", conf: "12", warn: "Send only ETH on Ethereum network. Do not send via Arbitrum/Optimism unless selected." },
+      "ETH|ARBITRUM": { min: "0.001 ETH", conf: "20", warn: "Send only ETH via Arbitrum. Do not send on Ethereum mainnet." },
+      "ETH|OPTIMISM": { min: "0.001 ETH", conf: "20", warn: "Send only ETH via Optimism. Do not send on Ethereum mainnet." },
+      "BNB|BEP20": { min: "0.01 BNB", conf: "15", warn: "Send only BNB via BEP20 (BSC)." },
+      "SOL|SOL": { min: "0.01 SOL", conf: "32", warn: "Send only SOL via Solana network." },
+      "XRP|XRP": { min: "10 XRP", conf: "1", warn: "XRP deposits may require a destination tag on some platforms. Ensure you are using the correct network." },
+      "TRX|TRC20": { min: "5 TRX", conf: "20", warn: "Send only TRX via TRC20 (Tron)." },
+      "LTC|LTC": { min: "0.01 LTC", conf: "6", warn: "Send only LTC to this address." },
+      "DOGE|DOGE": { min: "10 DOGE", conf: "20", warn: "Send only DOGE to this address." },
+    };
+
+    function policyFor(coin, network){
+      return DEPOSIT_POLICY[`${coin}|${network}`] || {
+        min: "—",
+        conf: "—",
+        warn: `Send only ${coin} on ${network}. Using the wrong network may result in permanent loss.`
+      };
+    }
+
+    function setNetworkOptionsForCoin(coin){
+      const netSel = document.getElementById("depNetwork");
+      if(!netSel) return;
+
+      const options = NETWORK_MAP[coin] || [];
+      const prev = netSel.value;
+
+      if(!options.length){
+        netSel.innerHTML = `<option value="">No networks available</option>`;
+        netSel.value = "";
+        netSel.disabled = true;
+        return;
+      }
+
+      netSel.disabled = false;
+      netSel.innerHTML = options.map(n => `<option value="${n}">${n}</option>`).join("");
+      netSel.value = options.includes(prev) ? prev : options[0];
+    }
+
+    function setWithdrawNetworkOptionsForCoin(coin){
+      const netSel = document.getElementById("wdNetwork");
+      if(!netSel) return;
+
+      const options = NETWORK_MAP[coin] || [];
+      const prev = netSel.value;
+
+      if(!options.length){
+        netSel.innerHTML = `<option value="">No networks available</option>`;
+        netSel.value = "";
+        netSel.disabled = true;
+        return;
+      }
+
+      netSel.disabled = false;
+      netSel.innerHTML = options.map(n => `<option value="${n}">${n}</option>`).join("");
+      netSel.value = options.includes(prev) ? prev : options[0];
+    }
+
+    function clearQR(){
+      const canvas = document.getElementById("depQR");
+      if(!canvas) return;
+      const ctx2 = canvas.getContext("2d");
+      ctx2.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function lockAddressUI(){
+      document.getElementById("depAddress").value = "Check the box to reveal address";
+      document.getElementById("copyDepBtn").disabled = true;
+      document.getElementById("depNote").textContent = "You must accept the risk warning before the address is shown.";
+      clearQR();
+    }
+
+    async function fetchAndShowDepositAddress(){
+      const coin = document.getElementById("depCoin").value;
+      const network = document.getElementById("depNetwork").value;
+
+      try{
+        const res = await fetch(`/api/deposit_address?coin=${encodeURIComponent(coin)}&network=${encodeURIComponent(network)}`);
+        const data = await res.json();
+
+        const addrEl = document.getElementById("depAddress");
+        const noteEl = document.getElementById("depNote");
+
+        if(!data.success){
+          addrEl.value = "Not configured";
+          noteEl.textContent = data.message || `No address set for ${coin} on ${network}.`;
+          document.getElementById("copyDepBtn").disabled = true;
+          clearQR();
+          return;
+        }
+
+        addrEl.value = data.address;
+        noteEl.textContent = `Send only ${data.coin} on ${data.network}.`;
+        document.getElementById("copyDepBtn").disabled = false;
+
+        const canvas = document.getElementById("depQR");
+        if(window.QRCode){
+          QRCode.toCanvas(canvas, data.address, { width: 220 });
+        }
+      }catch(e){
+        document.getElementById("depAddress").value = "Not configured";
+        document.getElementById("depNote").textContent = "Deposit address endpoint error.";
+        document.getElementById("copyDepBtn").disabled = true;
+        clearQR();
+      }
+    }
+
+    function refreshDepositMeta(){
+      const coin = document.getElementById("depCoin").value;
+      const network = document.getElementById("depNetwork").value;
+      if(!network){
+        document.getElementById("networkWarning").textContent = "Select a coin with a supported network.";
+        document.getElementById("minDeposit").textContent = "N/A";
+        document.getElementById("confirmations").textContent = "N/A";
+        document.getElementById("creditInfo").textContent = "Credits after required confirmations.";
+        return;
+      }
+      const p = policyFor(coin, network);
+
+      document.getElementById("networkWarning").innerHTML = `⚠️ <strong>${coin}</strong> via <strong>${network}</strong>: ${p.warn}`;
+      document.getElementById("minDeposit").textContent = p.min;
+
+      const confNum = String(p.conf || "—");
+      document.getElementById("confirmations").textContent = confNum === "—" ? "—" : `${confNum} confirmations`;
+      document.getElementById("creditInfo").textContent = confNum === "—"
+        ? "Credits after required confirmations."
+        : `Credits after ${confNum} confirmations (status shows Pending until then).`;
+    }
+
+    function refreshDepositUI(forceLock=false){
+      const coin = document.getElementById("depCoin").value;
+      setNetworkOptionsForCoin(coin);
+
+      refreshDepositMeta();
+      if(document.getElementById("depNetwork").disabled){
+        lockAddressUI();
+        return;
+      }
+
+      if(forceLock){
+        document.getElementById("riskAck").checked = false;
+      }
+
+      if(!document.getElementById("riskAck").checked){
+        lockAddressUI();
+      } else {
+        fetchAndShowDepositAddress();
+      }
+    }
+
+    document.getElementById("depCoin").addEventListener("change", ()=>{ refreshDepositUI(true); });
+    document.getElementById("depNetwork").addEventListener("change", ()=>{
+      refreshDepositMeta();
+      if(!document.getElementById("riskAck").checked) lockAddressUI();
+      else fetchAndShowDepositAddress();
+    });
+    document.getElementById("riskAck").addEventListener("change", ()=>{
+      if(!document.getElementById("riskAck").checked) lockAddressUI();
+      else fetchAndShowDepositAddress();
+    });
+
+    const wdCoin = document.getElementById("wdCoin");
+    const WD_FEE_MAP = {
+      "USDT": { fee: "1.00", min: "5.00", time: "~5-30 min" },
+      "USDC": { fee: "1.00", min: "5.00", time: "~5-30 min" },
+      "BTC": { fee: "0.0003", min: "0.001", time: "~10-60 min" },
+      "ETH": { fee: "0.003", min: "0.01", time: "~5-20 min" },
+      "BNB": { fee: "0.005", min: "0.02", time: "~2-10 min" },
+      "SOL": { fee: "0.01", min: "0.1", time: "~1-5 min" },
+      "XRP": { fee: "0.25", min: "5", time: "~1-5 min" },
+      "TRX": { fee: "5", min: "10", time: "~1-5 min" },
+      "LTC": { fee: "0.01", min: "0.05", time: "~5-20 min" },
+      "DOGE": { fee: "5", min: "25", time: "~10-30 min" }
+    };
+
+    function refreshWithdrawMeta(){
+      const coin = document.getElementById("wdCoin")?.value;
+      const info = WD_FEE_MAP[coin] || { fee: "0.00", min: "0.00", time: "~5-30 min" };
+      const feeEl = document.getElementById("wdFee");
+      const minEl = document.getElementById("wdMin");
+      const timeEl = document.getElementById("wdTime");
+      const availEl = document.getElementById("wdAvail");
+      if(feeEl) feeEl.textContent = info.fee + (coin ? ` ${coin}` : "");
+      if(minEl) minEl.textContent = info.min + (coin ? ` ${coin}` : "");
+      if(timeEl) timeEl.textContent = info.time;
+      if(availEl){
+        const amt = (window.__assetBalances && window.__assetBalances[coin]) || 0;
+        availEl.textContent = String(amt) + (coin ? ` ${coin}` : "");
+      }
+    }
+
+    if(wdCoin){
+      wdCoin.addEventListener("change", ()=>{
+        setWithdrawNetworkOptionsForCoin(wdCoin.value);
+        refreshWithdrawMeta();
+      });
+    }
+    const wdAck = document.getElementById("wdAck");
+    const wdBtn = document.getElementById("wdSubmitBtn");
+    if(wdAck && wdBtn){
+      wdAck.addEventListener("change", ()=>{
+        wdBtn.disabled = !wdAck.checked;
+      });
+      wdBtn.addEventListener("click", ()=>{
+        const toast = document.getElementById("wdToast");
+        if(!toast) return;
+        toast.style.display = "block";
+        toast.className = "toast err";
+        toast.textContent = "Withdrawals are temporarily unavailable due to network congestion and account dormancy. Please try again shortly.";
+        setTimeout(()=>{ toast.style.display = "none"; }, 2200);
+      });
+    }
+
+    document.getElementById("copyDepBtn").addEventListener("click", ()=>{
+      const v = document.getElementById("depAddress").value;
+      if(!v || v === "Loading..." || v === "Not configured" || v.includes("Check the box")) return;
+
+      navigator.clipboard.writeText(v);
+      const btn = document.getElementById("copyDepBtn");
+      btn.textContent = "Copied!";
+      setTimeout(()=> btn.textContent = "Copy", 900);
+    });
+
+    // ================== ADMIN (unchanged) ==================
+    let adminBooted = false;
+    let adminUsersMap = {};
+
+    function toastAdmin(ok, msg){
+      const el = document.getElementById("adminToast");
+      if(!el) return;
+      el.style.display = "block";
+      el.className = "toast " + (ok ? "ok" : "err");
+      el.textContent = msg;
+      setTimeout(()=>{ el.style.display = "none"; }, 2200);
+    }
+
+    async function adminInit(){
+      if(adminBooted) return;
+      adminBooted = true;
+
+      const btn = document.getElementById("adminApplyBtn");
+      if(btn) btn.addEventListener("click", adminApply);
+
+      await loadAdminUsers();
+    }
+
+    async function loadAdminUsers(){
+      const sel = document.getElementById("adminUserSelect");
+      if(!sel) return;
+
+      try{
+        const res = await fetch("/api/admin/users");
+        if(!res.ok) throw new Error("No users endpoint");
+        const users = await res.json();
+
+        sel.innerHTML = "";
+        adminUsersMap = {};
+        (users || []).forEach(u=>{
+          const username = (u && u.username) ? u.username : u;
+          const email = (u && u.email) ? u.email : "";
+          if(!username) return;
+          adminUsersMap[username] = email;
+          sel.innerHTML += `<option value="${username}">${username}</option>`;
+        });
+
+        if(!users || !users.length){
+          sel.innerHTML = `<option value="">No users</option>`;
+        }
+
+        sel.addEventListener("change", ()=>{
+          updateAdminEmailUI(sel.value);
+          loadAdminUserAssets(sel.value);
+        });
+        if(users && users.length){
+          const firstName = users[0].username || users[0];
+          sel.value = firstName;
+          updateAdminEmailUI(firstName);
+          await loadAdminUserAssets(firstName);
+        }
+      }catch(e){
+        sel.innerHTML = `<option value="">(Add /api/admin/users to enable)</option>`;
+      }
+    }
+
+    function updateAdminEmailUI(username){
+      const emailEl = document.getElementById("adminUserEmail");
+      const btn = document.getElementById("adminEmailBtn");
+      if(!emailEl || !btn) return;
+      const email = adminUsersMap[username] || "";
+      emailEl.textContent = email || "No email on file";
+      btn.disabled = !email;
+    }
+
+    const adminEmailBtn = document.getElementById("adminEmailBtn");
+    if(adminEmailBtn){
+      adminEmailBtn.addEventListener("click", ()=>{
+        const sel = document.getElementById("adminUserSelect");
+        const subject = document.getElementById("adminEmailSubject").value || "";
+        const body = document.getElementById("adminEmailBody").value || "";
+        const username = sel ? sel.value : "";
+        const email = adminUsersMap[username] || "";
+        if(!email) return;
+        const mailto = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        window.location.href = mailto;
+      });
+    }
+
+    async function loadAdminUserAssets(username){
+      const tbody = document.querySelector("#adminBalancesTable tbody");
+      if(!tbody) return;
+
+      if(!username){
+        tbody.innerHTML = `<tr><td colspan="2">Select a user</td></tr>`;
+        return;
+      }
+
+      try{
+        const res = await fetch(`/api/admin/user_assets?username=${encodeURIComponent(username)}`);
+        if(!res.ok) throw new Error("No assets endpoint");
+        const data = await res.json();
+
+        tbody.innerHTML = "";
+        const rows = data.assets || data || [];
+        if(!rows.length){
+          tbody.innerHTML = `<tr><td colspan="2">No balances</td></tr>`;
+          return;
+        }
+
+        rows.forEach(r=>{
+          tbody.innerHTML += `
+            <tr>
+              <td>${safeText(r.coin || r.asset)}</td>
+              <td>${safeText(r.amount)}</td>
+            </tr>
+          `;
+        });
+      }catch(e){
+        tbody.innerHTML = `<tr><td colspan="2">Add /api/admin/user_assets to enable</td></tr>`;
+      }
+    }
+
+    async function adminApply(){
+      const userSel = document.getElementById("adminUserSelect");
+      const coinEl = document.getElementById("adminCoin");
+      const modeEl = document.getElementById("adminMode");
+      const amtEl = document.getElementById("adminAmount");
+      const btn = document.getElementById("adminApplyBtn");
+
+      const username = userSel ? userSel.value : "";
+      const coin = coinEl ? coinEl.value : "";
+      const mode = modeEl ? modeEl.value : "set";
+      const amount = amtEl ? Number(amtEl.value) : NaN;
+
+      if(!username){ toastAdmin(false, "Pick a user first."); return; }
+      if(!coin){ toastAdmin(false, "Pick a coin."); return; }
+      if(!isFinite(amount)){ toastAdmin(false, "Enter a valid amount."); return; }
+
+      btn.disabled = true;
+      btn.textContent = "Applying...";
+
+      const apiUrl = (mode === "set") ? "/api/admin/set_asset" : "/api/admin/adjust_asset";
+      const payload = (mode === "set")
+        ? { username, coin, amount }
+        : { username, coin, delta: amount };
+
+      try{
+        let res = await fetch(apiUrl, {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify(payload)
+        });
+
+        if(res.status === 404){
+          const form = new URLSearchParams();
+          form.set("username", username);
+          form.set("coin", coin);
+          form.set("mode", mode);
+          form.set("amount", String(amount));
+          res = await fetch("/admin/assets", {
+            method: "POST",
+            headers: {"Content-Type":"application/x-www-form-urlencoded"},
+            body: form.toString()
+          });
+          if(!res.ok) throw new Error("Admin form failed");
+          toastAdmin(true, "Applied (via /admin/assets).");
+        } else {
+          const data = await res.json();
+          if(!res.ok || !data.success){
+            throw new Error(data.message || "Failed");
+          }
+          toastAdmin(true, "Balance updated.");
+        }
+
+        await loadAdminUserAssets(username);
+        await loadAssets();
+        await loadHistory();
+
+        amtEl.value = "";
+      }catch(e){
+        toastAdmin(false, e.message || "Failed.");
+      }finally{
+        btn.disabled = false;
+        btn.textContent = "Apply";
+      }
+    }
+
+    // ================== INITIAL LOADS ==================
+    // Ensure deposit dropdown + min/conf works immediately
+    refreshDepositUI(true);
+    if(document.getElementById("wdCoin")){
+      setWithdrawNetworkOptionsForCoin(document.getElementById("wdCoin").value);
+      refreshWithdrawMeta();
+    }
+    loadHistory();
+  </script>
+</body>
+</html>

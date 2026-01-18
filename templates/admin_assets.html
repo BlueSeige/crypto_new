@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin - Manage Assets</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+    body{background:#0B0E11;color:#EAECEF;padding:18px;}
+    .card{max-width:780px;margin:0 auto;background:rgba(18,24,38,0.9);border:1px solid #1f2937;border-radius:18px;padding:16px;box-shadow:0 10px 35px rgba(0,0,0,.55);}
+    h2{font-size:18px;margin-bottom:10px}
+    .muted{color:#9CA3AF;font-size:12px;margin-bottom:14px}
+    label{display:block;margin:10px 0 6px 0;color:#9CA3AF;font-size:12px;text-transform:uppercase;}
+    input, select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #1f2937;background:#121826;color:#EAECEF;font-weight:600;outline:none;}
+    input:focus, select:focus{border-color:rgba(247,166,0,.55)}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .btn{margin-top:12px;padding:12px 14px;border-radius:12px;border:1px solid #1f2937;background:#121826;color:#EAECEF;font-weight:700;cursor:pointer;}
+    .btn-primary{background:linear-gradient(135deg,#F7A600,#FFD54F);color:#0B0E11;border:none;}
+    .btn:hover{border-color:#F7A600}
+    .msg{margin-top:12px;padding:12px;border-radius:12px;border:1px solid #1f2937;background:#0F141B;color:#EAECEF;}
+    .ok{border-color:rgba(22,199,132,.4);background:rgba(22,199,132,.08)}
+    .err{border-color:rgba(234,57,67,.4);background:rgba(234,57,67,.08)}
+    .top-actions{display:flex;gap:10px;justify-content:flex-end;margin-bottom:12px}
+    a{color:#F7A600;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="top-actions">
+      <a href="/dashboard">← Back to Dashboard</a>
+    </div>
+
+    <h2>Admin: Manage User Assets</h2>
+    <div class="muted">Set a balance (overwrite) or adjust a balance (+/-). Only admin can access this page.</div>
+
+    <form method="POST" action="/admin/assets">
+      <label>Username</label>
+      <input name="username" placeholder="e.g. patrick" required />
+
+      <div class="row">
+        <div>
+          <label>Coin</label>
+          <select name="coin">
+            <option>USDT</option><option>USDC</option><option>BTC</option><option>ETH</option>
+            <option>BNB</option><option>SOL</option><option>XRP</option><option>TRX</option>
+            <option>LTC</option><option>DOGE</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Mode</label>
+          <select name="mode">
+            <option value="set">Set (overwrite)</option>
+            <option value="adjust">Adjust (+/-)</option>
+          </select>
+        </div>
+      </div>
+
+      <label>Amount</label>
+      <input name="amount" type="number" step="any" placeholder="e.g. 5000 or -200" required />
+
+      <button class="btn btn-primary" type="submit">Apply</button>
+    </form>
+
+    {% if message %}
+      <div class="msg {{ 'ok' if success else 'err' }}">
+        {{ message }}
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>
