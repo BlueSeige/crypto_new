@@ -241,8 +241,6 @@ def get_markets_api():
             })
         return jsonify(fallback)
 
-
-def @app.route()
 # -----------------------------
 # Assets (DB-backed)
 # -----------------------------
