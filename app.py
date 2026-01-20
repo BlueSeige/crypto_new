@@ -29,7 +29,7 @@ login_manager.login_view = "index"
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 
 # simple in-memory price cache to reduce API calls
-_PRICE_CACHE_PATH = os.path.join(app.instance_path, "price_cache.json")
+_PRICE_CACHE_PATH = "/data/price_cache.json"
 _price_cache = {"ts": 0.0, "prices": {}}
 _PRICE_TTL_SECONDS = 30
 _markets_cache = {"ts": 0.0, "data": []}
@@ -134,6 +134,7 @@ def api_signup():
 
     hashed_password = generate_password_hash(password)
 
+@app
     user = User(
         username=username,
         firstname=firstname,
@@ -241,6 +242,7 @@ def get_markets_api():
         return jsonify(fallback)
 
 
+def @app.route()
 # -----------------------------
 # Assets (DB-backed)
 # -----------------------------
