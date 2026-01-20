@@ -134,7 +134,7 @@ def api_signup():
 
     hashed_password = generate_password_hash(password)
 
-@app
+
     user = User(
         username=username,
         firstname=firstname,
