@@ -339,7 +339,8 @@ def api_assets():
         assets.append({
             "coin": sym,
             "amount": float(r.amount),
-            "value_usd": round(value, 2)
+            "value_usd": round(value, 2),
+            "value_cad": round(value_cad, 2)
         })
         total += value
         total_cad += value_cad
