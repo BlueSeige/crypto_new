@@ -265,6 +265,8 @@ def api_assets():
     }
 
     price_map = {}
+    price_map_cad = {}
+    usd_to_cad = float(_price_cache["prices"].get("USD_CAD") or 1.0)
     ids = []
     for r in rows:
         sym = (r.coin or "").upper()
@@ -272,6 +274,8 @@ def api_assets():
             price_map[sym] = 1.0
         elif sym in symbol_to_id:
             ids.append(symbol_to_id[sym])
+    if "usd-coin" not in ids:
+        ids.append("usd-coin")
 
     now = time.time()
     cache_fresh = (now - _price_cache["ts"]) < _PRICE_TTL_SECONDS
@@ -281,15 +285,26 @@ def api_assets():
     if ids and (not cache_fresh or not _price_cache["prices"]):
         try:
             url = "https://api.coingecko.com/api/v3/simple/price"
-            res = requests.get(url, params={"ids": ",".join(sorted(set(ids))), "vs_currencies": "usd"}, timeout=10)
+            res = requests.get(
+                url,
+                params={"ids": ",".join(sorted(set(ids))), "vs_currencies": "usd,cad"},
+                timeout=10
+            )
             data = res.json() if res.ok else {}
             for sym, cid in symbol_to_id.items():
-                if cid in data and "usd" in data[cid]:
-                    price_map[sym] = float(data[cid]["usd"])
+                if cid in data:
+                    if "usd" in data[cid]:
+                        price_map[sym] = float(data[cid]["usd"])
+                    if "cad" in data[cid]:
+                        price_map_cad[sym] = float(data[cid]["cad"])
+            if "usd-coin" in data and "cad" in data["usd-coin"]:
+                usd_to_cad = float(data["usd-coin"]["cad"])
             _price_cache["prices"] = {
                 k: v for k, v in price_map.items()
-                if k in symbol_to_id or k in ("USD", "CAD")
+                if k in symbol_to_id or k in ("USD", "CAD", "USD_CAD")
             }
+            if usd_to_cad > 0:
+                _price_cache["prices"]["USD_CAD"] = usd_to_cad
             _price_cache["ts"] = now
             _save_price_cache()
         except Exception:
@@ -300,27 +315,39 @@ def api_assets():
         sym = (r.coin or "").upper()
         if sym not in price_map:
             price_map[sym] = _DEFAULT_PRICE_MAP.get(sym, 0.0)
+        if sym == "CAD":
+            price_map_cad[sym] = 1.0
+        elif sym in ("USD", "USDT", "USDC"):
+            price_map_cad[sym] = usd_to_cad if usd_to_cad > 0 else 1.0
+        elif sym not in price_map_cad and usd_to_cad > 0:
+            price_map_cad[sym] = float(price_map.get(sym, 0.0)) * usd_to_cad
 
     assets = []
     total = 0.0
+    total_cad = 0.0
     available = 0.0
 
     for r in rows:
-        px = float(price_map.get(r.coin.upper(), 0))
+        sym = r.coin.upper()
+        px = float(price_map.get(sym, 0))
+        px_cad = float(price_map_cad.get(sym, 0))
         value = float(r.amount) * px
+        value_cad = float(r.amount) * px_cad
         if r.coin.upper() in ("USDT", "USD", "USDC", "CAD"):
             available += float(r.amount)
 
         assets.append({
-            "coin": r.coin.upper(),
+            "coin": sym,
             "amount": float(r.amount),
             "value_usd": round(value, 2)
         })
         total += value
+        total_cad += value_cad
 
     return jsonify({
         "available_usd": round(available, 2),
         "total_usd": round(total, 2),
+        "total_cad": round(total_cad, 2),
         "assets": assets
     })
 

@@ -540,7 +540,7 @@
       <section id="assetsTab" class="section">
         <div class="assets-top">
           <div class="card">
-            <div class="panel-title">Total Assets <span>USD</span></div>
+            <div class="panel-title">Total Assets <span>CAD</span></div>
             <div class="big" id="totalAssets">$0</div>
             <div class="muted">Sum of your portfolio value</div>
           </div>
@@ -919,6 +919,14 @@
     function fmt(n){
       return "$" + (Number(n) || 0).toLocaleString(undefined, {maximumFractionDigits: 2});
     }
+    function fmtCad(n){
+      const v = Number(n) || 0;
+      return new Intl.NumberFormat(undefined, {
+        style: "currency",
+        currency: "CAD",
+        maximumFractionDigits: 2
+      }).format(v);
+    }
     function fmtPct(n){
       const v = Number(n);
       if(!isFinite(v)) return "—";
@@ -1268,7 +1276,8 @@
         const res = await fetch("/api/assets");
         const data = await res.json();
 
-        document.getElementById("totalAssets").textContent = fmt(data.total_usd);
+        const totalCad = (data && typeof data.total_cad !== "undefined") ? data.total_cad : data.total_usd;
+        document.getElementById("totalAssets").textContent = fmtCad(totalCad);
         document.getElementById("availableBalance").textContent = fmt(data.available_usd);
 
         window.__assetBalances = {};
