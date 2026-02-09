@@ -545,9 +545,9 @@
             <div class="muted">Sum of your portfolio value</div>
           </div>
           <div class="card">
-            <div class="panel-title">Available Balance <span>USD</span></div>
+            <div class="panel-title">Available Balance <span>CAD</span></div>
             <div class="big" id="availableBalance">$0</div>
-            <div class="muted">Cash/USDT available</div>
+            <div class="muted">Cash/CAD available</div>
           </div>
         </div>
 
@@ -1278,7 +1278,8 @@
 
         const totalCad = (data && typeof data.total_cad !== "undefined") ? data.total_cad : data.total_usd;
         document.getElementById("totalAssets").textContent = fmtCad(totalCad);
-        document.getElementById("availableBalance").textContent = fmt(data.available_usd);
+        const availCad = (data && typeof data.available_cad !== "undefined") ? data.available_cad : data.available_usd;
+        document.getElementById("availableBalance").textContent = fmtCad(availCad);
 
         window.__assetBalances = {};
         const tbody = document.querySelector("#assetsTable tbody");

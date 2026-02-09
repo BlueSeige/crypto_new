@@ -326,6 +326,7 @@ def api_assets():
     total = 0.0
     total_cad = 0.0
     available = 0.0
+    available_cad = 0.0
 
     for r in rows:
         sym = r.coin.upper()
@@ -333,8 +334,13 @@ def api_assets():
         px_cad = float(price_map_cad.get(sym, 0))
         value = float(r.amount) * px
         value_cad = float(r.amount) * px_cad
-        if r.coin.upper() in ("USDT", "USD", "USDC", "CAD"):
-            available += float(r.amount)
+        if sym in ("USDT", "USD", "USDC", "CAD"):
+            amt = float(r.amount)
+            available += amt
+            if sym == "CAD":
+                available_cad += amt
+            else:
+                available_cad += amt * (usd_to_cad if usd_to_cad > 0 else 1.0)
 
         assets.append({
             "coin": sym,
@@ -347,6 +353,7 @@ def api_assets():
 
     return jsonify({
         "available_usd": round(available, 2),
+        "available_cad": round(available_cad, 2),
         "total_usd": round(total, 2),
         "total_cad": round(total_cad, 2),
         "assets": assets
