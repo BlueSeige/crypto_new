@@ -1290,25 +1290,34 @@
     // FIX: loadMarkets was missing (it was causing JS to crash, breaking deposit dropdown + min/conf UI)
     async function loadMarkets(){
       const tbody = document.querySelector("#marketTable tbody");
-      if(tbody) tbody.innerHTML = `<tr><td colspan="6">Loading...</td></tr>`;
+      if(tbody && !marketRows.length) tbody.innerHTML = `<tr><td colspan="6">Loading...</td></tr>`;
       try{
         const res = await fetch("/api/markets");
         if(!res.ok) throw new Error("markets fetch failed");
         const data = await res.json();
 
         const arr = Array.isArray(data) ? data : (data.markets || data.data || []);
-        marketRows = (arr || [])
+        const nextRows = (arr || [])
           .map(normalizeMarket)
           .filter(x => x.symbol);
 
-        if(!marketRows.length){
+        if(!nextRows.length){
+          if(marketRows.length){
+            renderMarkets();
+            return;
+          }
           const tbody2 = document.querySelector("#marketTable tbody");
           if(tbody2) tbody2.innerHTML = `<tr><td colspan="6">No markets.</td></tr>`;
           return;
         }
 
+        marketRows = nextRows;
         renderMarkets();
       }catch(e){
+        if(marketRows.length){
+          renderMarkets();
+          return;
+        }
         const tbody3 = document.querySelector("#marketTable tbody");
         if(tbody3) tbody3.innerHTML = `<tr><td colspan="6">Failed to load.</td></tr>`;
       }
