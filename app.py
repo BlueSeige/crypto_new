@@ -213,7 +213,9 @@ def get_markets_api():
                 "image": coin.get("image"),
                 "current_price": coin.get("current_price"),
                 "high_24h": coin.get("high_24h"),
-                "low_24h": coin.get("low_24h")
+                "low_24h": coin.get("low_24h"),
+                "price_change_percentage_24h": coin.get("price_change_percentage_24h"),
+                "total_volume": coin.get("total_volume"),
             })
         if coins:
             _markets_cache["data"] = coins
@@ -231,7 +233,9 @@ def get_markets_api():
                     "image": "",
                     "current_price": price,
                     "high_24h": None,
-                    "low_24h": None
+                    "low_24h": None,
+                    "price_change_percentage_24h": None,
+                    "total_volume": None,
                 })
             return jsonify(fallback)
         return jsonify(coins)
@@ -248,7 +252,9 @@ def get_markets_api():
                 "image": "",
                 "current_price": price,
                 "high_24h": None,
-                "low_24h": None
+                "low_24h": None,
+                "price_change_percentage_24h": None,
+                "total_volume": None,
             })
         return jsonify(fallback)
 
