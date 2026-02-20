@@ -48,6 +48,16 @@ _DEFAULT_PRICE_MAP = {
     "TRX": 0.12,
 }
 
+def _safe_ticker_prices():
+    last = _price_cache.get("prices") or {}
+    prices = {}
+    for sym in ("BTC", "ETH", "SOL", "XRP"):
+        v = float(last.get(sym) or 0.0)
+        if v <= 0:
+            v = float(_DEFAULT_PRICE_MAP.get(sym, 1.0))
+        prices[sym] = v
+    return prices
+
 def _load_price_cache():
     try:
         if os.path.exists(_PRICE_CACHE_PATH):
@@ -241,6 +251,15 @@ def get_markets_api():
                 "low_24h": None
             })
         return jsonify(fallback)
+
+@app.route("/api/ticker_snapshot")
+def api_ticker_snapshot():
+    prices = _safe_ticker_prices()
+    return jsonify({
+        "success": True,
+        **prices,
+        "ts": int(time.time() * 1000),
+    })
 
 # -----------------------------
 # Assets (DB-backed)
@@ -683,13 +702,7 @@ def price_streamer():
 
             socketio.emit("ticker_update", {**prices, "ts": int(time.time() * 1000)})
         except Exception:
-            last = _price_cache.get("prices") or {}
-            prices = {
-                "BTC": float(last.get("BTC") or _DEFAULT_PRICE_MAP.get("BTC", 0.0)),
-                "ETH": float(last.get("ETH") or _DEFAULT_PRICE_MAP.get("ETH", 0.0)),
-                "SOL": float(last.get("SOL") or _DEFAULT_PRICE_MAP.get("SOL", 0.0)),
-                "XRP": float(last.get("XRP") or _DEFAULT_PRICE_MAP.get("XRP", 0.0)),
-            }
+            prices = _safe_ticker_prices()
             socketio.emit("ticker_update", {**prices, "ts": int(time.time() * 1000)})
 
         socketio.sleep(1.5)
@@ -702,4 +715,5 @@ def on_connect():
         _streaming_started = True
         socketio.start_background_task(price_streamer)
 
+    emit("ticker_update", {**_safe_ticker_prices(), "ts": int(time.time() * 1000)})
     emit("connected", {"ok": True})
