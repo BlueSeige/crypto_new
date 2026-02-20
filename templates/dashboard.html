@@ -470,22 +470,22 @@
         <section class="tickers">
           <div class="card" id="card-btc" style="cursor:pointer">
             <div class="ticker-top"><div class="pair">BTC/USDT</div><div class="tag">Live</div></div>
-            <div class="price" id="px-btc">$0</div>
+            <div class="price" id="px-btc">$43,000</div>
             <div class="muted" id="chg-btc">—</div>
           </div>
           <div class="card" id="card-eth" style="cursor:pointer">
             <div class="ticker-top"><div class="pair">ETH/USDT</div><div class="tag">Live</div></div>
-            <div class="price" id="px-eth">$0</div>
+            <div class="price" id="px-eth">$2,300</div>
             <div class="muted" id="chg-eth">—</div>
           </div>
           <div class="card" id="card-sol" style="cursor:pointer">
             <div class="ticker-top"><div class="pair">SOL/USDT</div><div class="tag">Live</div></div>
-            <div class="price" id="px-sol">$0</div>
+            <div class="price" id="px-sol">$100</div>
             <div class="muted" id="chg-sol">—</div>
           </div>
           <div class="card" id="card-xrp" style="cursor:pointer">
             <div class="ticker-top"><div class="pair">XRP/USDT</div><div class="tag">Live</div></div>
-            <div class="price" id="px-xrp">$0</div>
+            <div class="price" id="px-xrp">$0.55</div>
             <div class="muted" id="chg-xrp">—</div>
           </div>
         </section>
@@ -1001,7 +1001,72 @@
       card_sol: document.getElementById("card-sol"),
       card_xrp: document.getElementById("card-xrp"),
     };
+    const DEFAULT_TICKER_PRICES = { BTC: 43000, ETH: 2300, SOL: 100, XRP: 0.55 };
+    const TICKER_CACHE_KEY = "ticker_prices_v1";
     let last = { BTC: null, ETH: null, SOL: null, XRP: null };
+
+    function loadTickerCache(){
+      try{
+        const raw = localStorage.getItem(TICKER_CACHE_KEY);
+        const data = raw ? JSON.parse(raw) : {};
+        return (data && typeof data === "object") ? data : {};
+      }catch(_e){
+        return {};
+      }
+    }
+    function saveTickerCache(prices){
+      try{
+        localStorage.setItem(TICKER_CACHE_KEY, JSON.stringify(prices || {}));
+      }catch(_e){}
+    }
+    function safeTickerPrice(sym, value){
+      const n = Number(value);
+      if(isFinite(n) && n > 0) return n;
+      const c = Number((window.__tickerCache || {})[sym]);
+      if(isFinite(c) && c > 0) return c;
+      return Number(DEFAULT_TICKER_PRICES[sym]) || 1;
+    }
+    function applyTickerUpdate(d, allowFlash=true){
+      const next = {
+        BTC: safeTickerPrice("BTC", d?.BTC),
+        ETH: safeTickerPrice("ETH", d?.ETH),
+        SOL: safeTickerPrice("SOL", d?.SOL),
+        XRP: safeTickerPrice("XRP", d?.XRP),
+      };
+
+      if(allowFlash && last.BTC !== null && next.BTC !== last.BTC) flash(els.card_btc, next.BTC > last.BTC);
+      if(allowFlash && last.ETH !== null && next.ETH !== last.ETH) flash(els.card_eth, next.ETH > last.ETH);
+      if(allowFlash && last.SOL !== null && next.SOL !== last.SOL) flash(els.card_sol, next.SOL > last.SOL);
+      if(allowFlash && last.XRP !== null && next.XRP !== last.XRP) flash(els.card_xrp, next.XRP > last.XRP);
+
+      if(els.btc) els.btc.textContent = fmt(next.BTC);
+      if(els.eth) els.eth.textContent = fmt(next.ETH);
+      if(els.sol) els.sol.textContent = fmt(next.SOL);
+      if(els.xrp) els.xrp.textContent = fmt(next.XRP);
+
+      last.BTC = next.BTC;
+      last.ETH = next.ETH;
+      last.SOL = next.SOL;
+      last.XRP = next.XRP;
+
+      window.__tickerCache = { ...(window.__tickerCache || {}), ...next };
+      saveTickerCache(window.__tickerCache);
+    }
+    async function loadTickerSnapshot(){
+      try{
+        const res = await fetch("/api/ticker_snapshot");
+        if(!res.ok) throw new Error("snapshot failed");
+        const data = await res.json();
+        applyTickerUpdate(data, false);
+      }catch(_e){
+        applyTickerUpdate(window.__tickerCache || {}, false);
+      }
+    }
+
+    window.__tickerCache = loadTickerCache();
+    applyTickerUpdate(window.__tickerCache, false);
+    loadTickerSnapshot();
+    setInterval(loadTickerSnapshot, 30000);
 
     // Click ticker cards -> set chart
     const TICKER_TO_TV = {
@@ -1018,22 +1083,7 @@
     // Update tickers; also show % change if backend sends it (optional)
     socket.on("ticker_update", (d) => {
       if(d && typeof d === "object"){
-        if(last.BTC !== null && d.BTC !== last.BTC) flash(els.card_btc, d.BTC > last.BTC);
-        if(isFinite(Number(d.BTC))) els.btc.textContent = fmt(d.BTC);
-        last.BTC = d.BTC;
-
-        if(last.ETH !== null && d.ETH !== last.ETH) flash(els.card_eth, d.ETH > last.ETH);
-        if(isFinite(Number(d.ETH))) els.eth.textContent = fmt(d.ETH);
-        last.ETH = d.ETH;
-
-        if(last.SOL !== null && d.SOL !== last.SOL) flash(els.card_sol, d.SOL > last.SOL);
-        if(isFinite(Number(d.SOL))) els.sol.textContent = fmt(d.SOL);
-        last.SOL = d.SOL;
-
-        if(last.XRP !== null && d.XRP !== last.XRP) flash(els.card_xrp, d.XRP > last.XRP);
-        if(isFinite(Number(d.XRP))) els.xrp.textContent = fmt(d.XRP);
-        last.XRP = d.XRP;
-
+        applyTickerUpdate(d, true);
         // optional change fields if your backend ever adds them
         if(els.chg_btc) els.chg_btc.textContent = d.BTC_CHG !== undefined ? fmtPct(d.BTC_CHG) : els.chg_btc.textContent;
         if(els.chg_eth) els.chg_eth.textContent = d.ETH_CHG !== undefined ? fmtPct(d.ETH_CHG) : els.chg_eth.textContent;
@@ -1041,6 +1091,8 @@
         if(els.chg_xrp) els.chg_xrp.textContent = d.XRP_CHG !== undefined ? fmtPct(d.XRP_CHG) : els.chg_xrp.textContent;
       }
     });
+    socket.on("connect", loadTickerSnapshot);
+    socket.on("connect_error", ()=> applyTickerUpdate(window.__tickerCache || {}, false));
 
     // ---------------- TradingView Chart ----------------
     let tvWidget = null;
