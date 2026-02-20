@@ -9,52 +9,52 @@ class Config:
     #Users will see these as their "deposit address" in the UI.
     DEPOSIT_ADDRESSES = {
         "USDT": {
-            "TRC20": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
-            "ERC20": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
-            "BEP20": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
-            "POLYGON": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
-            "ARBITRUM": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
-            "OPTIMISM": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
-            "SOL": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
+            "TRC20": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
+            "ERC20": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
+            "BEP20": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
+            "POLYGON": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
+            "ARBITRUM": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
+            "OPTIMISM": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
+            "SOL": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
         },
         "USDC": {
-            "ERC20": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
-            "BEP20": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
-            "POLYGON": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
-            "ARBITRUM": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
-            "OPTIMISM": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
-            "SOL": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
+            "ERC20": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
+            "BEP20": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
+            "POLYGON": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
+            "ARBITRUM": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
+            "OPTIMISM": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
+            "SOL": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
         },
         "CAD": {
-            "INTERAC": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
-            "SWIFT": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
-            "WIRE": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf"
+            "INTERAC": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
+            "SWIFT": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
+            "WIRE": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7"
         },
         "BTC": {
-            "BTC": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf"
+            "BTC": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7"
         },
         "ETH": {
-            "ETH": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
-            "ARBITRUM": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
-            "OPTIMISM": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf",
+            "ETH": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
+            "ARBITRUM": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
+            "OPTIMISM": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7",
         },
         "BNB": {
-            "BEP20": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf"
+            "BEP20": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7"
         },
         "SOL": {
-            "SOL": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf"
+            "SOL": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7"
         },
         "XRP": {
-            "XRP": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf"
+            "XRP": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7"
         },
         "TRX": {
-            "TRC20": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf"
+            "TRC20": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7"
         },
         "LTC": {
-            "LTC": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf"
+            "LTC": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7"
         },
         "DOGE": {
-            "DOGE": "1JxTb84bvE44A9j7ZySmMxJSbG5ovwb2Jf"
+            "DOGE": "bc1q54zz8x0dg494j76z6rnvy72rqrm7al06q2rrf7"
         },
     }
 
