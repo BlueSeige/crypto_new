@@ -28,7 +28,7 @@
       gap:12px;
     }
 
-    /* ✅ Mobile menu button (hidden on desktop) */
+    /*Mobile menu button (hidden on desktop) */
     .menu-btn{
       display:none;
       align-items:center;
@@ -459,7 +459,7 @@
         {% endif %}
       </div>
 
-      <!-- ✅ REMOVED: Quick Trade Market Buy/Sell block (per your request) -->
+      <!--REMOVED: Quick Trade Market Buy/Sell block-->
     </aside>
 
     <main class="content">
@@ -646,7 +646,7 @@
             <div class="deposit-right">
               <div class="muted">QR Code</div>
               <div style="height:10px"></div>
-              <img id="depQRPlaceholder" src="/static/qr.png" alt="QR placeholder" style="width:220px;height:220px;background:#fff;border-radius:16px;display:none;" />
+              <img id="depQRPlaceholder" src="static/QR.jpeg" alt="QR placeholder" style="width:220px;height:220px;background:#fff;border-radius:16px;display:none;" />
               <canvas id="depQR" width="220" height="220" style="background:#fff;border-radius:16px;display:none;"></canvas>
             </div>
           </div>
@@ -862,7 +862,7 @@
     const socket = io();
     const IS_ADMIN = "{{ username|lower }}" === "admin";
 
-    // ✅ Mobile drawer controls
+    // Mobile drawer controls
     const sidebarEl = document.getElementById("sidebar");
     const backdropEl = document.getElementById("backdrop");
     const menuBtn = document.getElementById("menuBtn");
@@ -966,7 +966,7 @@
       return `<span class="pill">${safeText(status,"—")}</span>`;
     }
 
-    // ✅ NEW: normalize admin-set/adjust types to "Deposit"
+    // NEW: normalize admin-set/adjust types to "Deposit"
     function normalizeTxType(t){
       const raw = String(t?.type ?? t?.tx_type ?? t?.kind ?? "").trim();
       const up = raw.toUpperCase();
@@ -1235,7 +1235,7 @@
       });
     });
 
-    // ✅ FIX: loadMarkets was missing (it was causing JS to crash, breaking deposit dropdown + min/conf UI)
+    // FIX: loadMarkets was missing (it was causing JS to crash, breaking deposit dropdown + min/conf UI)
     async function loadMarkets(){
       const tbody = document.querySelector("#marketTable tbody");
       if(tbody) tbody.innerHTML = `<tr><td colspan="6">Loading...</td></tr>`;
@@ -1337,7 +1337,7 @@
         }
 
         txs.slice().reverse().forEach(t=>{
-          // ✅ changed: show admin-set/adjust as "Deposit"
+          //changed: show admin-set/adjust as "Deposit"
           const type = normalizeTxType(t);
           const asset = safeText(t.asset || t.coin, "—");
           const amount = safeText(t.amount, "—");
