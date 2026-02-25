@@ -496,11 +496,11 @@
               Chart
               <span>
                 <select id="chartPair" class="input" style="padding:6px 10px;">
-                  <option value="BINANCE:BTCUSDT">BTC/USDT</option>
-                  <option value="BINANCE:ETHUSDT">ETH/USDT</option>
-                  <option value="BINANCE:SOLUSDT">SOL/USDT</option>
-                  <option value="BINANCE:XRPUSDT">XRP/USDT</option>
-                  <option value="BINANCE:BNBUSDT">BNB/USDT</option>
+                  <option value="BYBIT:BTCUSDT">BTC/USDT</option>
+                  <option value="BYBIT:ETHUSDT">ETH/USDT</option>
+                  <option value="BYBIT:SOLUSDT">SOL/USDT</option>
+                  <option value="BYBIT:XRPUSDT">XRP/USDT</option>
+                  <option value="BYBIT:BNBUSDT">BNB/USDT</option>
                 </select>
               </span>
             </div>
@@ -1070,10 +1070,10 @@
 
     // Click ticker cards -> set chart
     const TICKER_TO_TV = {
-      "BTC": "BINANCE:BTCUSDT",
-      "ETH": "BINANCE:ETHUSDT",
-      "SOL": "BINANCE:SOLUSDT",
-      "XRP": "BINANCE:XRPUSDT"
+      "BTC": "BYBIT:BTCUSDT",
+      "ETH": "BYBIT:ETHUSDT",
+      "SOL": "BYBIT:SOLUSDT",
+      "XRP": "BYBIT:XRPUSDT"
     };
     if(els.card_btc) els.card_btc.addEventListener("click", ()=> setChartPair(TICKER_TO_TV.BTC, "BTC/USDT"));
     if(els.card_eth) els.card_eth.addEventListener("click", ()=> setChartPair(TICKER_TO_TV.ETH, "ETH/USDT"));
@@ -1106,7 +1106,7 @@
         autosize: true,
         symbol: symbol,
         interval: "15",
-        timezone: "Etc/UTC",
+        timezone: "exchange",
         theme: "dark",
         style: "1",
         locale: "en",
@@ -1144,9 +1144,14 @@
 
     // load default from storage or BTC
     (function bootChart(){
-      let sym = "BINANCE:BTCUSDT";
+      let sym = "BYBIT:BTCUSDT";
       try{
         sym = localStorage.getItem("tv_symbol") || sym;
+        // migrate old saved symbols from BINANCE to BYBIT
+        if(/^BINANCE:[A-Z0-9]+USDT$/.test(sym)){
+          sym = sym.replace("BINANCE:", "BYBIT:");
+          localStorage.setItem("tv_symbol", sym);
+        }
       }catch(e){}
       const sel = document.getElementById("chartPair");
       if(sel) sel.value = sym;
@@ -1194,20 +1199,20 @@
       const symbol = (c.symbol || c.ticker || c.asset || "").toString().toUpperCase();
       const img = c.image || c.icon || "";
       const TV_SYMBOL_MAP = {
-        "BTC": "BINANCE:BTCUSDT",
-        "ETH": "BINANCE:ETHUSDT",
-        "SOL": "BINANCE:SOLUSDT",
-        "XRP": "BINANCE:XRPUSDT",
-        "BNB": "BINANCE:BNBUSDT",
-        "ADA": "BINANCE:ADAUSDT",
-        "DOGE": "BINANCE:DOGEUSDT",
-        "TRX": "BINANCE:TRXUSDT",
-        "LTC": "BINANCE:LTCUSDT",
-        "DOT": "BINANCE:DOTUSDT",
-        "MATIC": "BINANCE:MATICUSDT",
-        "AVAX": "BINANCE:AVAXUSDT",
-        "LINK": "BINANCE:LINKUSDT",
-        "SHIB": "BINANCE:SHIBUSDT"
+        "BTC": "BYBIT:BTCUSDT",
+        "ETH": "BYBIT:ETHUSDT",
+        "SOL": "BYBIT:SOLUSDT",
+        "XRP": "BYBIT:XRPUSDT",
+        "BNB": "BYBIT:BNBUSDT",
+        "ADA": "BYBIT:ADAUSDT",
+        "DOGE": "BYBIT:DOGEUSDT",
+        "TRX": "BYBIT:TRXUSDT",
+        "LTC": "BYBIT:LTCUSDT",
+        "DOT": "BYBIT:DOTUSDT",
+        "MATIC": "BYBIT:MATICUSDT",
+        "AVAX": "BYBIT:AVAXUSDT",
+        "LINK": "BYBIT:LINKUSDT",
+        "SHIB": "BYBIT:SHIBUSDT"
       };
       const tv = TV_SYMBOL_MAP[symbol] || "";
 
@@ -1254,7 +1259,7 @@
       });
 
       setSortIndicators();
-      setActiveMarketRow(document.getElementById("chartPair")?.value || "BINANCE:BTCUSDT");
+      setActiveMarketRow(document.getElementById("chartPair")?.value || "BYBIT:BTCUSDT");
     }
 
     function setActiveMarketRow(tvSymbol){
@@ -1513,6 +1518,13 @@
       netSel.value = options.includes(prev) ? prev : options[0];
     }
 
+    function refreshWithdrawAddressPrompt(){
+      const net = document.getElementById("wdNetwork")?.value || "";
+      const addr = document.getElementById("wdAddress");
+      if(!addr) return;
+      addr.placeholder = net === "INTERAC" ? "Enter email address" : "Paste destination wallet address";
+    }
+
     function clearQR(){
       const canvas = document.getElementById("depQR");
       if(!canvas) return;
@@ -1659,9 +1671,11 @@
     if(wdCoin){
       wdCoin.addEventListener("change", ()=>{
         setWithdrawNetworkOptionsForCoin(wdCoin.value);
+        refreshWithdrawAddressPrompt();
         refreshWithdrawMeta();
       });
     }
+    document.getElementById("wdNetwork")?.addEventListener("change", refreshWithdrawAddressPrompt);
     const wdAck = document.getElementById("wdAck");
     const wdBtn = document.getElementById("wdSubmitBtn");
     if(wdAck && wdBtn){
@@ -1687,6 +1701,8 @@
       btn.textContent = "Copied!";
       setTimeout(()=> btn.textContent = "Copy", 900);
     });
+
+    refreshWithdrawAddressPrompt();
 
     // ================== ADMIN (unchanged) ==================
     let adminBooted = false;
@@ -1876,6 +1892,7 @@
     refreshDepositUI(true);
     if(document.getElementById("wdCoin")){
       setWithdrawNetworkOptionsForCoin(document.getElementById("wdCoin").value);
+      refreshWithdrawAddressPrompt();
       refreshWithdrawMeta();
     }
     loadHistory();
