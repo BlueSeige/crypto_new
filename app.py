@@ -12,6 +12,7 @@ import random
 
 from flask_socketio import SocketIO, emit
 
+
 app = Flask(__name__)
 app.config.from_object(Config)
 
