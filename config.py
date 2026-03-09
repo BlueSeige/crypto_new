@@ -2,7 +2,12 @@ import os
 
 class Config:
     SECRET_KEY = "supersecretkey"
-    SQLALCHEMY_DATABASE_URI = "sqlite:////data/database.db"
+    _db_url = os.getenv("DATABASE_URL", "").strip()
+    if not _db_url:
+        raise RuntimeError("DATABASE_URL is required. SQLite fallback has been disabled.")
+    if _db_url.startswith("postgres://"):
+        _db_url = _db_url.replace("postgres://", "postgresql://", 1)
+    SQLALCHEMY_DATABASE_URI = _db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     #custodial deposit addresses (set them here)
